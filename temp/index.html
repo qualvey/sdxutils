@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <link href="css/style.css" rel="stylesheet">
+  </head>
+  <body>
+
+    <h1>qrcode</h1>
+  
+  </body>
+  <script>
+
+    //var obj = new WxLogin({
+    //  self_redirect: false,
+    //  id: "wechat-login-container", // 用于显示二维码的容器ID
+    //  appid: "wx5322e698d6ac98d4",
+    //  scope: "snsapi_login",
+    //  redirect_uri: "http%3A%2F%2Fsso.cloudnetcafe.com%2F%23%2FbindingAccount&state=62245",
+    //  //redirect_uri: encodeURIComponent("http://localhost:5000",
+    //  state: "25750",
+    //  login_type: "jssdk",
+    //  style: "black",
+    //  href: "https://hub.sdxnetcafe.com/src/static/wxlogin.css",
+    //  f:    "xml",
+    //  _:    "1743032647062"
+    //});
+console.log('Sending request to server...');
+fetch('/qrcode', {
+        method: 'GET',
+        credentials: 'include'  // 确保包含 Cookies
+      })
+    .then(response => response.json())
+    .then(data => {
+        const img = new Image();
+        img.src = `data:image/png;base64,${data.image}`;
+        document.body.appendChild(img);
+
+    })
+    .catch(error => console.error('Error fetching QR code:', error));
+
+  var login = 0;
+
+      // 定期检查登录状态
+  function checkLoginState() {
+        return new Promise((resolve, reject) => {
+          const interval = setInterval(() => {
+            fetch('http://127.0.0.1:5001/login_state/')
+              .then((response) => {
+                      data = response.json()
+                       console.log(data) 
+                       return data;
+              })
+              .then(data => {
+                if (data.token) {
+                  clearInterval(interval); // 停止轮询
+                  resolve(data);  // 返回 token_json
+                }
+              })
+          }, 2000); // 每 2 秒检查一次
+        });
+      }
+
+
+  function nothing() {
+        return new Promise((resolve, reject) => {
+          const interval = setInterval(() => {
+            fetch('/nothing', {
+        method: 'GET',
+        credentials: 'include'  // 确保包含 Cookies
+      })
+              .then((response) => {
+                      data = response.json()
+                       console.log(data) 
+                       return data;
+              })
+              .then(data => {
+                if (data.token) {
+                  clearInterval(interval); // 停止轮询
+                  resolve(data);  // 返回 token_json
+                }
+              })
+          }, 2000); // 每 2 秒检查一次
+        });
+      }
+
+  nothing()
+    .then(token_json => {
+      alert("登录成功！");
+      console.log("获取到的 token_json:", token_json);  // 获取到有效的 token_json
+      login = 1;
+    })
+  </script>
+</html>

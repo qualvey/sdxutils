@@ -1,0 +1,30 @@
+{
+    "page": 1,
+    "limit": 10,
+    "amountFee": 1501.0, //网费充值
+    "awardFee": 765.0,    //奖励金
+    "specialFree": 10.0, //特免
+    "cardVolumeFee": 85.0,  //卡券
+    "dateTm": "2025-03-09 00:00:00",
+    "newMember": 5,     //新会员
+    "onlineRate": 0.3023,   //上座率
+    "orderRate": 0.1008,    //点单率
+    "duration": 28292.0,    //上机时长
+    "onlineTimes": 119,     //上机人次
+    "perCapitaTime": 237.7479,  //人均时长
+    "fullRateCups": 12,     
+    "consumeFee": 5129.0,     
+    "totalConsumeNetworkFee": 5129.0,   //网费消耗
+    "cashIn": 25.0,     
+    "cashSaved": 25.0,
+    "onlineIn": 1824.9,       //在线支付
+    "onlineRefundFee": 2.0,
+    "totalRefundFee": 2.0,    //退款
+    "retail": 135.0,    //零售
+    "retailRefundFee": 2.0,
+    "waterBar": 152.9,  //水吧
+    "agent": 61.0,      //代购
+    "netIncome": 1501.0,
+    "accretionFee": 348.9,
+    "turnoverSumFee": 1849.9
+}

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>dashboard</title>
+    <link <!-- 引入 flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <!-- 引入 flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+  </head>
+  <body>
+    <!-- 日期输入框 -->
+    <label for="date">选择日期:</label>
+    <input type="text" id="date" name="date">
+    <div id="home-view" style="display: true;">
+      <h2>欢迎回来</h2>
+      <div id="meituan-block" class="block meituan">
+            <h3>美团数据</h3>
+            <div id="meituan-data">正在加载...</div>
+        </div>
+        <div id="douyin-block" class="block douyin">
+        <div id="douyin-block" class="block douyin">
+            <h3>抖音数据</h3>
+            <div id="douyin-data">正在加载...</div>
+            <h3>运营数据</h3>
+            <div id="operation-data">正在加载...</div>
+      <p id="token-text"></p>
+    </div>
+<a href="{{ url_for('logout') }}">退出登录</a>
+ <button id="runButton">运行</button>
+ <button id="Bt">请求参数测试</button>
+ <button id="submit-date">传递日期</button>
+      <div id='test'></div>
+<script>
+   // 使用 flatpickr 初始化日期选择器
+    flatpickr("#date", {
+        dateFormat: "Y-m-d",  // 格式化日期为 "yyyy-mm-dd"
+    });
+
+    document.getElementById('submit-date').addEventListener('click', function() {
+        const date = document.getElementById('date').value;  // 获取选择的日期
+        console.log(date)
+        const url = `{{ url_for('test', date='') }}${date}`
+        fetch( url, {
+            method: 'GET',  // 使用 GET 方法提交
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('返回的数据:', data);  // 处理返回的数据
+        })
+        .catch(error => {
+            console.error('请求失败:', error);
+        });
+    });
+        
+function fetchMeituanData() {
+  const date = document.getElementById('date').value;
+  return fetch(`/mtdata?date=${date}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        document.getElementById('meituan-data').innerText = `美团数据：${data}`;
+        return parseInt(data || 0); // 确保返回的是数字
+      } else {
+        return 0;
+      }
+    })
+    .catch(error => {
+      document.getElementById('meituan-data').innerText = '加载失败，请稍后再试。';
+      console.error('美团数据加载失败:', error);
+      return 0;
+    });
+}
+
+        // 请求抖音数据
+function fetchDouyinData() {
+  const date = document.getElementById('date').value;
+  return fetch(`/dydata?date=${date}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data && data.dy !== undefined) {
+        document.getElementById('douyin-data').innerText = `抖音数据：${data.dy}`;
+        return parseInt(data.dy || 0);
+      } else {
+        return 0;
+      }
+    })
+    .catch(error => {
+      document.getElementById('douyin-data').innerText = '加载失败，请稍后再试。';
+      console.error('抖音数据加载失败:', error);
+      return 0;
+    });
+}
+   
+function fetch_operation() {
+  const date = document.getElementById('date').value;
+  return fetch(`/operation?date=${date}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data) {
+        document.getElementById('operation-data').innerText = `运营数据：${data.income}`;
+        return parseInt(data.income || 0); // 返回收入作为结果
+      } else {
+        return 0;
+      }
+    })
+    .catch(error => {
+      document.getElementById('operation-data').innerText = '加载失败，请稍后再试。';
+      console.error('运营数据加载失败:', error);
+      return 0;
+    });
+}
+ fetchDouyinData();
+ fetchMeituanData();
+fetch_operation();
+
+document.getElementById("runButton").addEventListener("click", function() {
+    // 发送请求到后端的 /run 路由
+    fetch("{{ url_for('run') }}", {
+        method: 'GET',  // 请求方式 GET
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token') // 可以在这里设置Token等认证信息
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 处理服务器响应
+        console.log("请求成功:", data);
+        // 如果有返回信息，可以在页面上显示
+        alert("请求成功：" + data.message);
+    })
+    .catch(error => {
+        // 处理错误
+        console.error("请求失败:", error);
+        alert("请求失败！");
+    });
+});
+ document.querySelector('#Bt').addEventListener('click', function(){
+    Promise.all([
+      fetchDouyinData(),
+      fetchMeituanData(),
+      fetch_operation()
+    ]).then(([dy, mt, op]) => {
+      const sum = dy + mt + op;
+      document.getElementById('test').innerText = `${sum}`;
+      console.log('总和:', sum);
+    });
+          
+   fetch("{{ url_for('test', date='2025-04-08')}}")
+   .then(response => response.json())
+     .then(data =>{
+       console.log("n", data)
+     })
+     .catch(error => {
+       console.error("失败", error);
+     });
+ });
+      </script>
+  
+  </body>
+</html>
