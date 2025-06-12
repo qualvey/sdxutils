@@ -87,7 +87,7 @@ def get_meituanSum(date):
         logger.info('美团列表')
         for record in couponRecordDetails:
             price = record["salePrice"]
-            logger.info(price)
+            logger.info(f'{price}\t')
             sale_price = price.replace("¥", "")       # 去除货币符号
             sale_price_sum += float(sale_price)
             sale_price_sum = round(sale_price_sum, 2) 

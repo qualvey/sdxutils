@@ -6,6 +6,12 @@ import coloredlogs
 
 init(autoreset=True)
 
+class TabSuffixFormatter(logging.Formatter):
+    def format(self, record):
+        # 确保 msg 是字符串，并加一个制表符
+        record.msg = str(record.msg).rstrip() + '\t'
+        return super().format(record)
+
 class ParentDirFilter(logging.Filter):
     def filter(self, record):
         # 获取父目录名
@@ -32,6 +38,8 @@ def get_logger(name: str, log_file: str = log_path, level: int = LOG_LEVEL) -> l
         fh = logging.FileHandler(log_file, mode='w', encoding='utf-8')
         fh.setLevel(level)
         fh.setFormatter(logging.Formatter(LOG_FMT))
+        fh.setFormatter(TabSuffixFormatter(LOG_FMT))
+
         logger.addHandler(fh)
 
     # 避免重复安装 coloredlogs
@@ -47,6 +55,9 @@ def get_logger(name: str, log_file: str = log_path, level: int = LOG_LEVEL) -> l
             'critical': {'color': 'red', 'bold': True},
         }
     )
+    for handler in logger.handlers:
+        if isinstance(handler, logging.StreamHandler):
+            handler.setFormatter(TabSuffixFormatter(LOG_FMT))
 
     return logger
 # 测试代码

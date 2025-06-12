@@ -94,7 +94,7 @@ def run(date):
 
     lines = ["{"]
     for key, value in data.items():
-        lines.append(f'  "{key:<{max_key_len}}": {value:>6.2f},')
+        lines.append(f'"{key:<{max_key_len}}"\t: {value:>6.2f},')
     lines[-1] = lines[-1].rstrip(',')  # 去掉最后一行的逗号
     lines.append("}")
 

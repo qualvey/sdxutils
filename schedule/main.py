@@ -13,45 +13,49 @@ url = "https://hub.sdxnetcafe.com/api/admin/duty/roster/save"
 
 headers['Content-Type'] = "application/json;charset=utf-8"
 
-start_date = "2025-05-19" 
+start_date = "2025-06-04" 
 #如果不是today，那就设置为目标week的前一周的任意一天
 #start_date = "today" 
 rest_days_map = {
-    "郭丰硕": [1, 2],         
+    "唐爱语": [6],         
     "汪永康": [7],       
-    "巫媛媛": [5,6,7],
-    "裴海军": []
+    "王慧"  : [3],
+    "裴海军": [7]
 }
 
 handsome = '李龙涛'
-crew_list = [ '裴海军','汪永康', '郭丰硕', '巫媛媛']
+crew_list = [ '裴海军','汪永康', '唐爱语', '王慧']
 
 schedule_map = {
     '汪永康': '店长',
-    '郭丰硕': '晚收',
-    '巫媛媛': '早收',
     '裴海军': '中班',
+    '唐爱语': '晚收',
+    '王慧'  : '早收'
 }
 
 #获取每个人的userid
 userids = get_userid.get_userid()
+
 with open(f'{dir}/userids.json', 'w', encoding='utf-8') as f:
     json.dump(userids, f,ensure_ascii=False, indent=2)
 #获取所有的categoryid
-categoryid_api = f"https://hub.sdxnetcafe.com/api/admin/duty/category/list/{branchid}"
-categoryids_response = requests.get(url = categoryid_api, headers = headers)
-categoryids_rawdata = categoryids_response.json()['data']
-categoryids = {}
-#用法:   categoryids['班次']
-for i in categoryids_rawdata:
-    categoryids[i['category']] = i['id']
-with open(f'{dir}/categoryids', 'w', encoding='utf-8') as f:
-    json.dump(categoryids, f, ensure_ascii = False, indent=4)
 
+def get_categaryids():
+    categoryid_api = f"https://hub.sdxnetcafe.com/api/admin/duty/category/list/{branchid}"
+    categoryids_response = requests.get(url = categoryid_api, headers = headers)
+    categoryids_rawdata = categoryids_response.json()['data']
+    categoryids = {}
+#用法:   categoryids['班次']
+    for i in categoryids_rawdata:
+        categoryids[i['category']] = i['id']
+    with open(f'{dir}/categoryids', 'w', encoding='utf-8') as f:
+        json.dump(categoryids, f, ensure_ascii = False, indent=4)
+    return categoryids
+
+categoryids = get_categaryids()
 rest =  categoryids['休息']
 
 #一周的日期
-
 def get_next_week_days(dt):
     # 计算当前日期是星期几，星期一为0，星期日为6
     current_weekday = dt.weekday()
@@ -62,8 +66,9 @@ def get_next_week_days(dt):
     # 计算上周一的日期
     next_monday = next_sunday - timedelta(days=6)
     week_dates = [next_monday + timedelta(days=i) for i in range(7)]
-    logger.info(f'{next_monday},{next_sunday}')
+    logger.info(f'目标日期范围: \t{next_monday.date()},{next_sunday.date()}')
     return week_dates
+
 if start_date == "today":
     date_list = get_next_week_days(datetime.today().replace(hour=0, minute=0, second=0))
 else : 
@@ -94,10 +99,10 @@ def get_list():
 def gen_userdata(name):
     userid = userids[name]
     schedule = schedule_map[name]
-    inout       = in_out[schedule]
+    inout       = 'IN'
+    #inout       = in_out[schedule]
     categoryid = categoryids[schedule]
     rest_day = rest_days_map.get(name, [])  # 这里就是 [1~7] 形式的列表
-
 
     data = []
     for dt in date_list:
@@ -160,22 +165,23 @@ def gen_ryu_schedule(update = False, days_id =None):
             data.append(item)
     return data
 
-def new_instance():
-    for i in crew_list:
-        data = gen_userdata(i)
-        response = requests.post(url=url, json = data, headers = headers)
+def new_instance(name):
+    data = gen_userdata(name)
+    response = requests.post(url=url, json = data, headers = headers)
 
     data = gen_ryu_schedule()
     response = requests.post(url=url, json = data, headers = headers)
 
 def update_data(name,days_id):
-    userid = userids[name]
-    schedule = schedule_map[name]
-    inout       = in_out[schedule]
-    categoryid = categoryids[schedule]
-    rest_day = rest_days_map.get(name, [])  # 这里就是 [1~7] 形式的列表
 
-    data = []
+    userid      = userids[name]
+    schedule    = schedule_map[name]
+    inout       = 'IN'
+    #inout       = in_out[schedule]
+    categoryid  = categoryids[schedule]
+    rest_day    = rest_days_map.get(name, [])  # 这里就是 [1~7] 形式的列表
+
+    data        = []
     for idx, dt in enumerate(date_list, 0): 
         target_id = days_id[idx]
         if dt.isoweekday() in rest_day:
@@ -229,10 +235,10 @@ with open('./schedule/right_data.json', 'r' , encoding='utf-8') as f:
 #response = requests.post(url=url, json = data, headers = headers)
 #breakpoint()
 
-
 if not old_list:
     logger.info('重新设置数据')
-    new_instance()
+    for i in crew_list:
+        new_instance(i)
 else:
     final_json = []
     days_id_list = extract_days(old_list)
