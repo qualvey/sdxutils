@@ -12,7 +12,10 @@ logger = get_logger(__name__)
 
 def init_db():
 # 连接到 SQLite 数据库（如果文件不存在，会自动创建）
-    conn = sqlite3.connect(f'{env.proj_dir}/energy_data.db')
+    db_path = f'{env.proj_dir}/energy_data.db'
+    conn = sqlite3.connect(db_path)
+    print(f'db_path is : {db_path}')
+  
     cursor = conn.cursor()
 # 创建表（如果不存在）
     create_table_query = '''
