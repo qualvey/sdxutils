@@ -1,6 +1,8 @@
 import os
 import json
+import platform
 import pytz
+
 from datetime   import datetime, date
 
 def get_directory(level=0):
@@ -71,8 +73,14 @@ configjson  = {}
 with open(config_file, 'r',encoding="UTF-8") as config:
     configjson = json.loads(config.read())
 
+
 working_datetime = datetime.strptime(configjson['date'], "%Y-%m-%d")
-date_str = working_datetime.strftime("%-m月%-d日")
+if platform.system() == "Windows":
+    # On Windows, use %#m and %#d to remove leading zeros
+    date_str = working_datetime.strftime("%#m月%#d日")
+else:
+    # On Unix-like systems (Linux, macOS), use %-m and %-d
+    date_str = working_datetime.strftime("%-m月%-d日")
 
 
 print(dir())
