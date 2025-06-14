@@ -69,7 +69,7 @@ def get_meituanSum(date):
 
         try:
             json_data = response.json()
-            with open(f"{proj_dir}/meituan/meituan.json",'w') as data_json:
+            with open(f"{proj_dir}/meituan/meituan.json",'w', encoding="utf-8") as data_json:
                 json.dump(json_data, data_json, ensure_ascii=False, indent=4)
         except json.JSONDecodeError:
             print("响应不是合法 JSON")
