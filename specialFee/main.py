@@ -7,9 +7,11 @@ from openpyxl.cell.text import InlineFont
 from openpyxl.cell.rich_text import TextBlock, CellRichText
 
 from http.cookies import SimpleCookie
-from tools    import env
+from tools    import env, logger 
+from tools      import logger as mylogger
 from tools.iheader import headers
 
+logger = mylogger.get_logger(__name__)
 scheme = 'https://'
 hostname = headers['Host']
 
@@ -52,7 +54,7 @@ def resolve_data(data_json):
     #breakpoint()
     return special_reason_totals
 
-def format_specialFee(data, special_code, reverse=False):
+def format_specialFee(data, special_code, reverse=False) -> None | list:
 
     #用dict数据结构来存储
     speciallist = []
@@ -65,10 +67,12 @@ def format_specialFee(data, special_code, reverse=False):
         max_reason_length = max(len(reason) for reason, _ in sorted_items)
 
         for index, (reason, total) in enumerate(sorted_items, start=1):
-            
-            padding_length = (max_reason_length - len(reason)) * 3
-
-            item = f"{index}. {reason:<{max_reason_length + padding_length}}：{total}"
+            logger.debug(reason)
+            raw_padding = (max_reason_length - len(reason)) * 3
+            padding_length = max(min(raw_padding, 3), 6)
+            width  = max_reason_length + padding_length
+            assert width >= 0, f"格式化宽度不能为负数，但现在是 {width}"
+            item = f"{index}. {reason:<{width}}:{total}"
             speciallist.append(item)
         return speciallist
 

@@ -23,7 +23,6 @@ worksheet = workbook.active
 #today = datetime.today()-timedelta(days=8)
 today = datetime.today()
 today_datetime = datetime.combine(today, time.min)
-breakpoint()
 
 duration_sum = {}
 
@@ -158,7 +157,6 @@ def to_xl(worksheet, json):
         date_object = datetime.strptime(i['dutyDate'], date_format)
         datecell = find.get_cell_by_datetime(worksheet, date_object, start_cell="B2", end_cell="AG2")
 
-        breakpoint()
         column_index = datecell.column
         column_letter = get_column_letter(column_index)
         target_cell = worksheet[f'{column_letter}{id_row}']

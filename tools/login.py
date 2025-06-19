@@ -233,7 +233,6 @@ def main_flow():
 
     return token
 
-
 def is_token_valid():
     #返回两个值，bool和token（如果有
     with open(f'{env.proj_dir}/temp/token.json', 'r') as cache:

@@ -1,16 +1,13 @@
 import shutil
 import os
 import argparse
-from datetime   import datetime, date, timedelta, time
-from copy       import copy
+from datetime               import datetime, date, timedelta, time
+from copy                   import copy
 
 from openpyxl                import load_workbook
-from openpyxl.styles         import Font, Border, Side,  Alignment, numbers
-from openpyxl.cell.text      import InlineFont
-from openpyxl.cell.rich_text import CellRichText, TextBlock, TextBlock
-from openpyxl.utils import column_index_from_string, get_column_letter
+from openpyxl.cell.rich_text import  TextBlock, TextBlock
 
-from meituan.main       import get_meituanSum, mt_status, get_mtgood_rates
+from meituan.main       import get_meituanSum,  get_mtgood_rates
 from douyin.main        import get_douyin_data, get_dygood_rate
 from operation.main     import resolve_operation_data
 from operation import ThirdParty
@@ -87,7 +84,6 @@ cn_en_map = {
     "点单率"    :     "orderRate",
     "新会员"    :     "newMember"
 }
-
 
 mt, mt_len = get_meituanSum(working_datetime)
 
