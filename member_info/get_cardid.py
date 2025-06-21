@@ -6,10 +6,6 @@ import argparse
 
 logger = mylogger.get_logger(__name__)
 
-parser = argparse.ArgumentParser(description="获取用户信息")
-parser.add_argument('name',              type=str, help='姓名')
-parser.add_argument('-n', '--name', type=str, default=None, help='姓名')
-args = parser.parse_args()
 
 headers = iheader.headers
 
@@ -27,13 +23,20 @@ def get_person_info(name: str) -> list:
 
     response = requests.get(url = api, params=params, headers=headers)
     resJson = response.json()
-#a = json.dumps(resJson, ensure_ascii=False , indent=4)
+    with open('./member.json', 'w', encoding='utf-8') as f:
+        json.dump(resJson, f, ensure_ascii=False , indent=4)
 #rows可能不止一个,多个结果怎么处理
 #可能有mobile，nickname
-    result = resJson['data']['rows']
-    result_number = len(result)
+    result = resJson.get('data').get('rows')
+    flag = 0
+    if result:
+        result_number = len(result)
+    else:
+        flag = 1
+        result_number = 0
 
-    if result_number > 1:
+
+    if result_number > 1 and flag == 0:
         members = []
         for i in range(result_number-1):
             member = result[i]
@@ -45,7 +48,7 @@ def get_person_info(name: str) -> list:
             data['realName'] = member.get('realName')
             data['certId']   = member.get('certId')
             members.append(data) 
-    else:
+    elif flag == 0 :
         members = []
         member = result[0]
         data = {}
@@ -56,9 +59,17 @@ def get_person_info(name: str) -> list:
         data['realName'] = member.get('realName')
         data['certId']   = member.get('certId')
         members.append(data) 
+    else:
+        return []
     return members
 
 if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="获取用户信息")
+    parser.add_argument('name',              type=str, help='姓名')
+    parser.add_argument('-n', '--name', type=str, default=None, help='姓名')
+    args = parser.parse_args()
+
     name = args.name
     result = get_person_info(name)
     str_json = json.dumps(result, ensure_ascii=False, indent=4)
