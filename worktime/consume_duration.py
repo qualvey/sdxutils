@@ -1,12 +1,14 @@
 
 from tools import iheader, env, logger
+from typing import List
 from datetime import timedelta, datetime
 import urllib.parse
 import requests
 import json
 
 logger = logger.get_logger(__name__)
-def get_previous_week_range(dt):
+
+def get_previous_week_range(dt: datetime) -> List[datetime]:
     # 计算当前日期是星期几，星期一为0，星期日为6
     current_weekday = dt.weekday()
     # 计算上周日距离当前日期的天数
@@ -17,11 +19,9 @@ def get_previous_week_range(dt):
     last_monday = last_sunday - timedelta(days=6)
     week_dates = [last_monday + timedelta(days=i) for i in range(7)]
     return week_dates
-date_list = get_previous_week_range(datetime.today())
-logger.info(f'start date{date_list[0]}')
-#print('datelist元素的数据类型',date_list[0].__class__)
 
-def get_data_aday(date_str):
+
+def get_data_aday(date_str: str):
     url_dict = {
     "scheme": "https",
     "host": "hub.sdxnetcafe.com",
@@ -41,7 +41,7 @@ def get_data_aday(date_str):
     response  = requests.get(url, headers=iheader.headers)
     return response.json()
 
-def get_value_days(date_list) -> int:
+def get_value_days(date_list: List[datetime]) -> int:
     value = 0
     for date_items in date_list:
         date_str = str(date_items)
@@ -53,9 +53,11 @@ def get_value_days(date_list) -> int:
     with open(f"{env.proj_dir}/worktime/data.info.json", 'w') as f:
         json.dump(data, f, ensure_ascii=False, indent=4)
 
+date_list = get_previous_week_range(datetime.today())
+logger.info(f'start date{date_list[0]}')
+#print('datelist元素的数据类型',date_list[0].__class__)
+
 value = get_value_days(date_list)
 
 if __name__ == "__main__":
     value = get_value_days(date_list)
-    print('总的消费时长',value)
-    print(date_list)
