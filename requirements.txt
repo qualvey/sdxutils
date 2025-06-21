@@ -19,3 +19,5 @@ pytest
 #matplotlib
 Pyqt6
 Pillow
+#你需要用专门处理宽字符的库，比如 wcwidth 来计算“可打印宽度”，这样才能准确对齐。
+wcwidth
