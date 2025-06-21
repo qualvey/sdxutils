@@ -64,7 +64,7 @@ def get_uuid():
     root = ET.fromstring(xml_data)
     uuid = root.find('uuid').text
     if not uuid:
-        prit('uuid error~!!')
+        logger.error('uuid error~!!')
     return uuid
 
 def show_img(response_qrcode):
@@ -143,9 +143,8 @@ def lp_wxcode(uuid, max_attempts=10, interval=1):
                         errcode = int(errcode_match.group(1))
                         if errcode == 405 and code_match:
                             wx_code = code_match.group(1)
-                            print(f"获取到 wx_code: {wx_code}")
+                            logger.info(f"获取到 wx_code: {wx_code}")
                             return wx_code
-
         time.sleep(interval)
 
 def get_token(wx_code):
@@ -228,8 +227,7 @@ def main_flow():
     token_json = decode_jwt_without_verification(token)
     token_json['token'] = token
 
-    with open(f'{env.proj_dir}/temp/token.json', 'w') as cache:
-        json.dump(token_json, cache)
+    with open(f'{env.proj_dir}/temp/token.json', 'w') as cache: json.dump(token_json, cache)
 
     return token
 
@@ -258,10 +256,10 @@ if os.path.isfile(f'{env.proj_dir}/temp/token.json'):
     status, token = is_token_valid()
     if status:
         token = token
-        print("令牌未过期,不用扫码")
+        logger.info("令牌未过期,不用扫码")
     else:
         token = main_flow()
-        print("令牌已过期")
+        logger.info("令牌已过期")
 else:
     token = main_flow()
 

@@ -2,8 +2,13 @@ import os
 import json
 import platform
 import pytz
+import logging
 
 from datetime   import datetime, date
+
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(filename='myapp.log', level=logging.INFO)
 
 def get_directory(level=0):
     """
@@ -17,7 +22,7 @@ def get_directory(level=0):
     current_dir = os.path.dirname(os.path.abspath(__file__))
     for _ in range(level):
         current_dir = os.path.dirname(current_dir)
-    print(f'变量current_dir{current_dir}')
+    logger.info(f'变量current_dir{current_dir}')
     return current_dir
 
 def get_timestamp(datetime_obj, end_of_day=False, unit='ms'):
@@ -58,7 +63,7 @@ def get_timestamp(datetime_obj, end_of_day=False, unit='ms'):
         else:
             raise ValueError("unit 参数必须是 's' 或 'ms'。")
     except (ValueError, TypeError) as e:
-        print(f"错误：{e}")
+        logger.error(f"错误：{e}")
         return None  # 如果日期字符串格式错误或其他异常，则返回 None
 
 home = os.environ.get('HOME') 
@@ -82,11 +87,9 @@ else:
     # On Unix-like systems (Linux, macOS), use %-m and %-d
     date_str = working_datetime.strftime("%-m月%-d日")
 
-
-print(dir())
 if __name__ == "__main__":
-    print(configjson)
-    print("当前脚本所在目录:", get_directory())
-    print("proj_dir:" ,proj_dir)
-    print("上一级目录:", get_directory(1))
-    print("上两级目录:", get_directory(2))
+    logger.info(configjson)
+    logger.info("当前脚本所在目录:", get_directory())
+    logger.info("proj_dir:" ,proj_dir)
+    logger.info("上一级目录:", get_directory(1))
+    logger.info("上两级目录:", get_directory(2))

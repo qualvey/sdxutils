@@ -1,8 +1,6 @@
 import requests
 import json
-from http.cookies import SimpleCookie
 from datetime import datetime, timedelta
-import pytz
 import argparse
 
 import time
@@ -53,7 +51,7 @@ def fetch_douyin_data(date,max_retries=5, delay=2):
         'industry'  : 'industry_common', 
         'root_life_account_id' : '7143570945559037956'
     }
-    logger.info(f'美团日期:{date}')
+    logger.info(f'抖音日期:{date}')
 
     time_start = datetime(date.year, date.month, date.day)
     time_end = time_start + timedelta(hours=23, minutes=59, seconds=59)
