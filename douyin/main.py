@@ -6,6 +6,8 @@ import argparse
 import time
 from tools import env
 from tools.logger import get_logger
+from typing  import Optional, Tuple
+from decimal import Decimal, ROUND_HALF_UP, DecimalException
 
 logger = get_logger(__name__)
 
@@ -39,12 +41,14 @@ specific_headers = {
 
 headers = common_headers | specific_headers
 
-def fetch_douyin_data(date,max_retries=5, delay=2):
-    '''
-    date<datetime.date>
-    '''
+class DouyinRequestError(Exception):
+    """抖音数据请求失败（重试已达最大次数）"""
+    pass
+
+def fetch_douyin_data(date: datetime,max_retries=5, delay=2):
+
     url = "https://life.douyin.com/life/trade_view/v1/verify/verify_record_list/"
-    
+
     params  = {
         'page_index': 1,
         'page_size' : 100,
@@ -82,9 +86,14 @@ def fetch_douyin_data(date,max_retries=5, delay=2):
             response = requests.post(url, params=params, json=post_data, headers=headers, cookies=cookie)
             response.raise_for_status()  # 如果状态码不是 200，抛出异常
             douyin_json = response.json()
+
             if douyin_json:
                 logger.info("获取抖音数据成功.")
                 logger.debug(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
+
+                status_code = douyin_json.get("status_code")
+                if status_code == 4000100:
+                    raise ValueError("鉴权失败，cookie 可能过期")
 
             with open(f"{env.proj_dir}/douyin/douyin.json", 'w', encoding='utf-8') as data_json:
                 json.dump(douyin_json, data_json, ensure_ascii=False, indent=4)
@@ -97,35 +106,30 @@ def fetch_douyin_data(date,max_retries=5, delay=2):
             if attempt < max_retries - 1:  # 如果还有重试机会，等待后重试
                 time.sleep(delay)  # 等待 delay 秒后重试
             else:
-                logger.error("抖音已达到最大重试次数，放弃请求")
-                return None  # 所有尝试都失败，返回 None
+                raise DouyinRequestError("抖音已达到最大重试次数，放弃请求")
 
-def get_douyin_data(date):
-    '''
-    date<datetime.date>
-    '''
-    sum = 0
-    douyin_json = fetch_douyin_data(date)
+def get_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
+    total: Decimal = Decimal("0.0")
     try:
-        dy_list = douyin_json.get('data').get('list')
+        dy_data = dy_json.get('data')
+        if dy_data is None:
+            raise ValueError('返回中缺少 "data" 字段')
+        
+        dy_list = dy_data.get('list')
         if dy_list:
-            dy_len  = len(dy_list)
+            dy_len = len(dy_list)
             logger.info("抖音列表")
             for item in dy_list:
-                verify_amount = item['amount']['verify_amount']
-                logger.info(verify_amount/100)
-                sum += verify_amount/100
+                raw_amount = item['amount']['verify_amount']  # 单位是分？
+                amount = Decimal(raw_amount) / Decimal("100")  # 单位转元
+                logger.info(f"{amount}")
+                total += amount
         else:
-            dy_len  = 0
+            dy_len = 0
     except KeyError as e:
-        breakpoint()
-        logger.error(f'返回中不存在期待的键，报错。{e}')
-        return None, None
+        raise ValueError(f"解析数据失败：缺失关键字段 {e}") from e
 
-    if sum==0:
-        return None, 0
-    else:
-        return sum, dy_len
+    return total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP), dy_len
 
 def get_dygood_rate(date):
 
@@ -175,6 +179,19 @@ def get_dygood_rate(date):
     else:
         return 0
 
+def final_out(date: datetime) ->  Optional[Tuple[Decimal, int]]:
+    try:
+        data = fetch_douyin_data(date)
+        if not data:
+            raise ValueError('请求返回失败')
+        result = get_douyin_data(data)
+        good_rate = get_dygood_rate(date)
+        logger.info(f"好评数：{good_rate}")
+        return result
+    except Exception as e:
+        logger.warning(f"final_out 失败：{e}")
+        return None
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="抖音模块")
     parser.add_argument("-n", "--now",  action = "store_true", help="今天")
@@ -183,16 +200,20 @@ if __name__ == "__main__":
     if args.date:
         date = datetime.strptime(args.date, "%Y-%m-%d")
         logger.info(f'date: {date}')
-        sum, len_of_list = get_douyin_data(date)
-        good_rates = get_dygood_rate(date)
-        logger.info(f'好评数量：{good_rates}')
+        data = final_out(date)
+        if data:
+            sum, len_of_list = data
     if args.now:
         date = datetime.today()
         logger.info(f'date: {date}')
-        sum, len_of_list = get_douyin_data(date)
+        data = final_out(date)
+        if data:
+            sum, len_of_list = data
         good_rates = get_dygood_rate(date)
         logger.info(f'好评数量：{good_rates}')
     else:
-        sum, len_of_list =    get_douyin_data(datetime.today() - timedelta(days=1))
+        data  =  final_out(datetime.today() - timedelta(days=1))
+        if data:
+            sum, len_of_list = data
     logger.info(f"抖音总金额: {sum}")
 
