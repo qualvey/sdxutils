@@ -41,7 +41,7 @@ def get_data_aday(date_str: str):
     response  = requests.get(url, headers=iheader.headers)
     return response.json()
 
-def get_value_days(date_list: List[datetime]) -> int:
+def get_sum(date_list: List[datetime]) -> int:
     value = 0
     for date_items in date_list:
         date_str = str(date_items)
@@ -57,7 +57,6 @@ date_list = get_previous_week_range(datetime.today())
 logger.info(f'start date{date_list[0]}')
 #print('datelist元素的数据类型',date_list[0].__class__)
 
-value = get_value_days(date_list)
-
 if __name__ == "__main__":
-    value = get_value_days(date_list)
+    value = get_sum(date_list)
+    logger.info(f"{value}")
