@@ -1,14 +1,15 @@
 import requests
 import json
-from datetime import datetime, timedelta, date
-import pytz
+from datetime import datetime, timedelta
 import argparse
+import os
 
-from tools import env, logger
-from urllib.parse import unquote
+from tools import env
+from tools import logger as mylogger
+from typing import Any, Dict, Tuple, Optional
+from requests.exceptions import RequestException
 
-#loger = logger.get_logger(name='meituan', log_file=f'{env.proj_dir}/meituan/log')
-logger = logger.get_logger(__name__)
+logger = mylogger.get_logger(__name__)
 
 cookies_str  = env.configjson['cookies']['mt']
 proj_dir = env.proj_dir
@@ -33,22 +34,28 @@ headers = {
     "Origin": "https://e.dianping.com",
     "Referer": "https://e.dianping.com/app/np-mer-voucher-web-static/records"
 }
-        
 
+#要想办法判断cookie是否失效
 def parse_cookies(cookie_str):
     cookies = dict(item.strip().split("=", 1) for item in cookie_str.split("; ") if "=" in item)
     return cookies
 
 cookies = parse_cookies(cookies_str)
 
-def get_meituanSum(date):
-    #date: <datetime.datetime>对象
+def get_meituanSum(date: datetime) -> Tuple[float, int]:
+    """
+    获取指定日期的美团订单总金额和订单数量。
+    返回: (总金额, 订单数量)
+    """
+    # 设定起止时间（当日 00:00:00 - 23:59:59）
     today_start = datetime(date.year, date.month, date.day)
     today_end = today_start + timedelta(hours=23, minutes=59, seconds=59)
-    logger.info(f'美团数据日期{today_end.month}')
-    # 转换为 Unix 时间戳（单位：秒）
-    begin_timestamp = int(today_start.timestamp()*1000)
-    end_timestamp = int(today_end.timestamp()*1000)
+
+    logger.info(f'美团数据日期 {today_start.strftime("%Y-%m-%d")}')
+
+    # 转换为毫秒级 Unix 时间戳
+    begin_timestamp = int(today_start.timestamp() * 1000)
+    end_timestamp = int(today_end.timestamp() * 1000)
 
     data = {
         "selectDealId": 0,
@@ -62,39 +69,53 @@ def get_meituanSum(date):
         "subTabNum": None
     }
 
+    json_data: Optional[Dict[str, Any]] = None
+    sale_price_sum = 0.0
+    mt_len = 0
+
     try:
-        response = requests.post(url = mt_api,  headers=headers, json=data, cookies=cookies)
-        #response = requests.post(url = mt_api, params=params, headers=headers, json=data, cookies=cookies)
-        response.raise_for_status()  # HTTP 错误（4xx/5xx）抛出异常
+        response = requests.post(url=mt_api, headers=headers, json=data, cookies=cookies)
+        response.raise_for_status()
+        json_data = response.json()
 
-        try:
-            json_data = response.json()
-            with open(f"{proj_dir}/meituan/meituan.json",'w', encoding="utf-8") as data_json:
-                json.dump(json_data, data_json, ensure_ascii=False, indent=4)
-        except json.JSONDecodeError:
-            print("响应不是合法 JSON")
-            json_data = None
+        if not json_data:
+            logger.error('美团请求返回空值，请检查 cookie 是否失效')
+
+        # 保存 JSON 响应
+        os.makedirs(f"{proj_dir}/meituan", exist_ok=True)
+        with open(f"{proj_dir}/meituan/meituan.json", 'w', encoding="utf-8") as data_json:
+            json.dump(json_data, data_json, ensure_ascii=False, indent=4)
+
     except RequestException as e:
-        print(f"请求失败: {e}")
-        json_data = None
+        logger.error(f"请求失败: {e}")
+    except json.JSONDecodeError:
+        logger.error("响应不是合法 JSON")
 
-    sale_price_sum = 0
-    couponRecordDetails = json_data["data"]["couponRecordDetails"]
-    mt_len              = json_data['data']['recordSum']
+    # 处理返回数据
+    if json_data:
+        data = json_data.get("data", {})
+        couponRecordDetails = data.get("couponRecordDetails", [])
+        mt_len = data.get("recordSum", 0)
 
-    if  couponRecordDetails:           
         i=0
-        logger.info('美团列表')
-        for record in couponRecordDetails:
-            price = record["salePrice"]
-            logger.info(f'{price}\t')
-            sale_price = price.replace("¥", "")       # 去除货币符号
-            sale_price_sum += float(sale_price)
-            sale_price_sum = round(sale_price_sum, 2) 
-            i+=1
-        logger.info(f'总计{i}单')
-    return sale_price_sum, mt_len
+        if couponRecordDetails:
+            logger.info('美团列表')
+            for i, record in enumerate(couponRecordDetails, start=1):
+                price_str = record.get("salePrice", "")
+                logger.info(f'{price_str}\t')
 
+                try:
+                    sale_price = float(price_str.replace("¥", "").strip())
+                except ValueError:
+                    logger.warning(f"无法解析价格: {price_str}")
+                    continue
+
+                sale_price_sum += sale_price
+
+            sale_price_sum = round(sale_price_sum, 2)
+            logger.info(f'总计 {i} 单')
+
+    return sale_price_sum, mt_len
 def get_mtgood_rates(date):
 
     '''
