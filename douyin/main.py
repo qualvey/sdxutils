@@ -7,11 +7,13 @@ import time
 from tools import env
 from tools.logger import get_logger
 from typing  import Optional, Tuple
-from decimal import Decimal, ROUND_HALF_UP, DecimalException
+from decimal import Decimal, ROUND_HALF_UP
 
 logger = get_logger(__name__)
 
 cookie          = env.configjson['cookies']['dy']
+
+output_path = f"{env.proj_dir}/douyin/douyin.json"
 
 common_headers = {
         "Accept": "application/json, text/plain, */*",
@@ -45,8 +47,15 @@ class DouyinRequestError(Exception):
     """抖音数据请求失败（重试已达最大次数）"""
     pass
 
-def fetch_douyin_data(date: datetime,max_retries=5, delay=2):
-
+def fetch_douyin_data(
+    date: datetime,
+    session: Optional[requests.Session] = None,
+    headers: Optional[dict] = None,
+    cookies: Optional[dict] = None,
+    output_path: Optional[str] = None,
+    max_retries: int = 5,
+    delay: int = 2
+):
     url = "https://life.douyin.com/life/trade_view/v1/verify/verify_record_list/"
 
     params  = {
@@ -83,7 +92,8 @@ def fetch_douyin_data(date: datetime,max_retries=5, delay=2):
     }
     for attempt in range(max_retries):
         try:
-            response = requests.post(url, params=params, json=post_data, headers=headers, cookies=cookie)
+            session = session or requests.Session()
+            response = session.post(url, params=params, json=post_data, headers=headers, cookies=cookies)
             response.raise_for_status()  # 如果状态码不是 200，抛出异常
             douyin_json = response.json()
 
@@ -94,8 +104,7 @@ def fetch_douyin_data(date: datetime,max_retries=5, delay=2):
                 status_code = douyin_json.get("status_code")
                 if status_code == 4000100:
                     raise ValueError("鉴权失败，cookie 可能过期")
-
-            with open(f"{env.proj_dir}/douyin/douyin.json", 'w', encoding='utf-8') as data_json:
+            with open(f"{output_path}", 'w', encoding='utf-8') as data_json:
                 json.dump(douyin_json, data_json, ensure_ascii=False, indent=4)
 
             return douyin_json  # 请求成功，返回 JSON 数据
@@ -110,6 +119,7 @@ def fetch_douyin_data(date: datetime,max_retries=5, delay=2):
 
 def get_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
     total: Decimal = Decimal("0.0")
+    output: str = "\n"
     try:
         dy_data = dy_json.get('data')
         if dy_data is None:
@@ -122,8 +132,11 @@ def get_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
             for item in dy_list:
                 raw_amount = item['amount']['verify_amount']  # 单位是分？
                 amount = Decimal(raw_amount) / Decimal("100")  # 单位转元
-                logger.info(f"{amount}")
+                #logger.info(f"{amount}")
+                output += f"{amount}\n"
                 total += amount
+
+            logger.info(output)
         else:
             dy_len = 0
     except KeyError as e:
@@ -181,7 +194,7 @@ def get_dygood_rate(date):
 
 def final_out(date: datetime) ->  Optional[Tuple[Decimal, int]]:
     try:
-        data = fetch_douyin_data(date)
+        data = fetch_douyin_data(date = date, headers=headers, cookies=cookie, output_path=output_path )
         if not data:
             raise ValueError('请求返回失败')
         result = get_douyin_data(data)
@@ -215,5 +228,6 @@ if __name__ == "__main__":
         data  =  final_out(datetime.today() - timedelta(days=1))
         if data:
             sum, len_of_list = data
+
     logger.info(f"抖音总金额: {sum}")
 
