@@ -1,15 +1,16 @@
-import meituan.main as mt
-import douyin.main as dy
-import json
-from datetime import date, datetime, timedelta
-from operation.main import today_income
-from operation import ThirdParty
-from tools.logger import get_logger
+import  meituan.main    as mt
+import  douyin.main     as dy
+from    datetime        import date, datetime
+from    operation.main  import today_income
+from    operation       import ThirdParty
+from    tools.logger    import get_logger
+from    decimal         import Decimal
+import requests
+from requests.exceptions import RequestException
 
-import schedule
-import time
 import argparse
 import logging
+import urllib3.exceptions
 
 logger =  get_logger(__name__)
 levelNum = logger.getEffectiveLevel()
@@ -20,30 +21,48 @@ today = date.today()
 today_datetime=datetime.combine(today, datetime.min.time())
 logger.info(f'今天的日期:{today}')
 
-douyin_sum , _ = dy.get_douyin_data(today)
-meituan_sum, _ = mt.get_meituanSum(today)
+data = dy.final_out(today_datetime)
+if data:
+    douyin_sum, _ = data
+else:
+    raise ValueError('抖音没有数据'
+    )
+meituan_sum, _ = mt.get_meituanSum(today_datetime)
 
 ota_info ={
-    'DOUYIN'  : meituan_sum,
-    'MEITUAN' : douyin_sum
+    'DOUYIN'  : float(douyin_sum),
+    'MEITUAN' : meituan_sum 
 }
 income         = today_income(today)
 
-income_dict = {'MEITUAN': meituan_sum, 'DOUYIN':douyin_sum}
+income_dict = {'MEITUAN': meituan_sum, 'DOUYIN': float(douyin_sum)}
 
 ota_update  = ThirdParty.ota_update
 delete_third = ThirdParty.delete
 check_unique = ThirdParty.check_unique
 
-def update(date):
-    names = ['MEITUAN', 'DOUYIN']
+def check_network():
+    try:
+        # 尝试请求一个稳定的网站，比如百度、微信、Google（根据网络环境选）
+        requests.get("http://open.weixin.qq.com", timeout=5)
+        print("网络正常")
+    except urllib3.exceptions.MaxRetryError as e:
+        print("网络连接异常：DNS 解析失败或无法连接")
+    except RequestException as e:
+        print("网络连接异常：", str(e))
 
+check_network()
+
+def update(date):
+
+    names = ['MEITUAN', 'DOUYIN']
     logger.info('updating ota infomation')
     ids = check_unique(str(date))
 
     date_datetime=datetime.combine(date, datetime.min.time())
     logger.debug(f'三方已经存在的数据{ids}')
     status =[]
+
     for type, id_list in ids.items():
         obj = {}
         delete_status_list = []
@@ -73,7 +92,7 @@ def update(date):
                     flag_in = False
     else:
         ota_update('MEITUAN', date_datetime, meituan_sum)
-        ota_update('DOUYIN', date_datetime, douyin_sum)
+        ota_update('DOUYIN', date_datetime, float(douyin_sum))
 
     if missing:
         for missing_name in missing:
@@ -82,13 +101,13 @@ def update(date):
 
 def run(date):
 
-    ota_sum = (douyin_sum or 0) + (meituan_sum or 0)
+    ota_sum = (douyin_sum or 0) + (Decimal(str(meituan_sum)) or 0)
     data = {
         "抖音收入": round(douyin_sum or 0, 2),
         "美团收入": round(meituan_sum or 0, 2),
         "OTA收入合计": round(ota_sum, 2),
         "收银台收入": round(income or 0, 2),
-        "今日总营业额": round(ota_sum + (income or 0), 2)
+        "今日总营业额": round(ota_sum + Decimal(str((income or 0))))
     }
     max_key_len = max(len(k) for k in data.keys())
 
@@ -101,6 +120,7 @@ def run(date):
     formatted_result = "\n".join(lines)
     logger.info(formatted_result)
     update(date)
+
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser(description="收入计算")
