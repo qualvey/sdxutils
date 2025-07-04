@@ -1,3 +1,4 @@
+from logging import log
 import requests
 import json
 from datetime import datetime, timedelta
@@ -98,11 +99,13 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
         mt_len = data.get("recordSum", 0)
 
         i=0
+        ouput_price: str = " \n"
         if couponRecordDetails:
             logger.info('美团列表')
             for i, record in enumerate(couponRecordDetails, start=1):
                 price_str = record.get("salePrice", "")
-                logger.info(f'{price_str}\t')
+                #logger.info(f'{price_str}\t')
+                ouput_price += f" {price_str}\n"
 
                 try:
                     sale_price = float(price_str.replace("¥", "").strip())
@@ -111,6 +114,7 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
                     continue
 
                 sale_price_sum += sale_price
+            logger.info(ouput_price)
 
             sale_price_sum = round(sale_price_sum, 2)
             logger.info(f'总计 {i} 单')

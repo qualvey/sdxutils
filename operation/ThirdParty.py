@@ -1,13 +1,12 @@
 from tools.iheader import headers as Iheaders
-from tools import logger
+from tools import logger as mylogger
 
 import requests
 import math
 import json 
-from datetime import datetime
 from collections import defaultdict
 
-logger=logger.get_logger('third_party')
+logger=mylogger.get_logger('third_party')
 
 scheme='https://'
 hostname = 'hub.sdxnetcafe.com'
@@ -42,23 +41,25 @@ for line in lines:
 saveurl = 'https://hub.sdxnetcafe.com/api/admin/third/income/save'
 
 
-def get_list(page : int,limit : int, startTm=None, endTm=None):
+def get_list(page : int,limit : int, startTm=None, endTm=None) -> dict:
     list_thirdpaty = f'{scheme}{hostname}/api/admin/third/income/pageList?branchId=a92fd8a33b7811ea87766c92bf5c82be&startTm={startTm}&endTm={endTm}&page={page}&limit={limit}'
     response = requests.get(url = list_thirdpaty, headers=Iheaders, timeout=10, verify = True)
     response_list = response.json()
+
     return response_list
 
 third_type_ids = defaultdict(list)  # 自动为每个 key 分配一个空列表
-def gen_duplicated_item_dict(date_str, item_list):
+def gen_duplicated_item_dict(date_str: str, item_list:dict):
     '''
     item_list: List[Dict]，其中每个 dict 至少包含 'reportDate', 'id', 'thirdType'
     '''
+
     for item in item_list:
         if item['reportDate'] == date_str:
             third_type = item['thirdType']
             item_id = item['id']
             third_type_ids[third_type].append(item_id)
-            logger.warning('已经存在同名的数据，需要删除重新更新')
+            logger.warning(f'已经存在{third_type}，需要删除重新更新')
 
 def check_unique(date_str ):
 
@@ -83,7 +84,7 @@ def check_unique(date_str ):
 
     else:
         gen_duplicated_item_dict(date_str, data_list )
-    return third_type_ids  
+    return third_type_ids
 
 def delete(id: str):
 

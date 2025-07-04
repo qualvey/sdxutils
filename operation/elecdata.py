@@ -78,7 +78,7 @@ wb = load_workbook(elecSheet)
 #dataonly不能保存，保存就破坏公式了
 ws = wb.active
 
-def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35"):
+def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35") -> int | None:
     """
     参数：工作表，查找值<datatime>, 开始和终止的cell位置
     返回：第一个匹配到的cell行号
@@ -91,9 +91,9 @@ def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35"):
             for cell in row:
                 if isinstance(cell.value, datetime):  # 确保是 datetime 类型
                     if cell.value.date() == search_value:  # 对比日期部分
-                        print('命中')
-                        print(cell.row)
+                        #breakpoint()
                         return cell.row  # 直接返回行号
+
         return None  # 未找到匹配值
 
     except KeyError:
@@ -110,7 +110,7 @@ def write_elecxl(elec_usage, target_row, destination):
     wb.save(elecSheet)
     wb.save(destination)
 
-def get_elecUsage(datetime_obj):
+def get_elecUsage(datetime_obj: datetime) -> float:
     search_date = datetime_obj
     if_exist = query_data(search_date.strftime('%Y-%m-%d'))
 
@@ -123,7 +123,7 @@ def get_elecUsage(datetime_obj):
         root.title("输入电表数据")
         root.geometry('300x150')
 
-        input_result = {'value': None}
+        input_result = {'value': 0.0  }
 
         def on_enter_pressed(event=None):
             val = entry.get()
@@ -188,4 +188,8 @@ def get_elecUsage(datetime_obj):
             raise UserCancledException("用户取消，电表模块退出")
 
     result = result * 80
-    return int(result)
+    return float(result)
+
+if __name__ == "__main__":
+    a = get_row_by_date(ws, "a")
+    #breakpoint()
