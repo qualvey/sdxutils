@@ -15,6 +15,7 @@ flask
 flask-login
 
 pytest
+pytest-mock
 #显示图片
 #matplotlib
 Pyqt6
