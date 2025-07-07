@@ -1,14 +1,27 @@
 #!/bin/bash
 
+nasup() {
+  dir="/home/ryu/code/oneKey/et/"
+  url="http://nas.nebulaol.com:88/?launchApp=SYNO.SDS.Drive.Application#file_id=887980386458581107"
+  thunar "${dir}" &
+  ~/.local/bin/chromium-smart --new-window $url &
+  dufs $dir
+}
+
+set -e
 dir="/home/ryu/code/oneKey"
-etdir="${dir}/et"
-url='http://nas.nebulaol.com:88/?launchApp=SYNO.SDS.Drive.Application#file_id=877012051539574605'
-dt=$(date -d "yesterday" +"%m%d")
 source "$dir/venv/bin/activate"
-python "$dir/main.py"
+
+if [ "$1" = "today" ]; then
+  source "$dir/venv/bin/activate"
+  python "$dir/ota.py"
+  exit 0
+fi
+
+dt=$(date -d "yesterday" +"%m%d")
 etfile="${dt}日报表/2025年日报表.xlsx"
 
-et "$dir/et/${etfile}" &
-thunar "$etdir" &
-firefox --new-window $url &
-dufs "$etdir"
+python "$dir/main.py"
+#et "$dir/et/${etfile}" &
+libreoffice "$dir/et/${etfile}" &
+nasup
