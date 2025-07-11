@@ -72,7 +72,7 @@ def load_data(elec_usage: float, mt: float, dy: float, english: dict, cn_en_map:
 
 def insert_data(ws: Worksheet, data: dict) -> Worksheet:
 
-    target_row = electron.get_row_by_date(ws, working_datetime_date)
+    target_row = electron.get_row_by_date(ws, working_datetime)
     target_row  = cast(int, target_row)
     
     logger.info(f'电表数据所在行号 {target_row}')
@@ -124,9 +124,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    yesterday = date.today() - timedelta(days=1)
-    working_datetime_date = yesterday
-    working_date_str      = yesterday.strftime('%Y-%m-%d')
+    yesterday: datetime = date.today() - timedelta(days=1)
+    working_date_str:str = yesterday.strftime('%Y-%m-%d')
     working_datetime      = datetime.combine(yesterday, datetime.min.time())
 
     if args.dateconfig:
@@ -136,7 +135,7 @@ if __name__ == "__main__":
         working_datetime_date = datetime.today()
         working_datetime      = datetime.combine(working_datetime_date, datetime.min.time())
     if args.date:
-        working_datetime      = datetime.strptime(args.date, "%Y-%m-%d")
+        working_datetime:datetime   = datetime.strptime(args.date, "%Y-%m-%d")
 
     else:
         try:
@@ -146,9 +145,9 @@ if __name__ == "__main__":
         except Exception as e:
             logger.error(f'{e}')
 
-    logger.info(f'当前工作的日期是: {working_datetime_date}')
+    logger.info(f'当前工作的日期是: {working_datetime}')
 
-    dir_str     = f"{env.proj_dir}/et/{working_datetime_date.strftime('%m%d')}日报表"
+    dir_str     = f"{env.proj_dir}/et/{working_datetime.strftime('%m%d')}日报表"
     source_file = env.source_file
     save_path   = f"{dir_str}/2025年日报表.xlsx"
 
@@ -214,6 +213,9 @@ if __name__ == "__main__":
     if not ws:
         raise ValueError('没有活动的worksheet')
 #判断specialFeesum和specialFee是否一致I#
+
+    elec_usage: float = electron.get_elecUsage(working_datetime)
+
     data_pure = load_data(elec_usage, mt, float(dy), english, cn_en_map)
     if data_pure['特免'] != special_sum:
         logger.warning(f"特免金额不匹配，请检查!!运营数据中是{data_pure['特免']},订单列表中计算出来是{special_sum}")
