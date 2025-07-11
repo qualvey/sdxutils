@@ -78,7 +78,8 @@ wb = load_workbook(elecSheet)
 #dataonly不能保存，保存就破坏公式了
 ws = wb.active
 
-def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35") -> int | None:
+def get_row_by_date(worksheet,date:datetime,start_cell="A1",end_cell="A35") -> int | None:
+    date_str:str = date.date()
     """
     参数：工作表，查找值<datatime>, 开始和终止的cell位置
     返回：第一个匹配到的cell行号
@@ -90,7 +91,7 @@ def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35") -> in
         for row in worksheet.iter_rows(min_row=min_row, max_row=max_row, min_col=min_col, max_col=max_col):
             for cell in row:
                 if isinstance(cell.value, datetime):  # 确保是 datetime 类型
-                    if cell.value.date() == search_value:  # 对比日期部分
+                    if cell.value.date() == date_str:  # 对比日期部分
                         #breakpoint()
                         return cell.row  # 直接返回行号
 
