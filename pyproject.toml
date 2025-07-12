@@ -1,0 +1,12 @@
+[project]
+name = "sdxok"
+version = "1.0"
+dependencies = [
+  "colorama>=0.4.6",
+  "coloredlogs>=15.0.1",
+  "opencv-python>=4.12.0.88",
+  "openpyxl",
+  "pillow>=11.3.0",
+  "pytz>=2025.2",
+  "requests>=2.32.4",
+]
