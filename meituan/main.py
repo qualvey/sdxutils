@@ -76,6 +76,7 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
 
     try:
         response = requests.post(url=mt_api, headers=headers, json=data, cookies=cookies)
+        #breakpoint()
         response.raise_for_status()
         json_data = response.json()
 
@@ -87,10 +88,11 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
         with open(f"{proj_dir}/meituan/meituan.json", 'w', encoding="utf-8") as data_json:
             json.dump(json_data, data_json, ensure_ascii=False, indent=4)
 
-    except RequestException as e:
-        logger.error(f"请求失败: {e}")
+#    except RequestException as e:
+#        logger.error(f"请求失败: {e}")
     except json.JSONDecodeError:
         logger.error("响应不是合法 JSON")
+        logger.error(response)
 
     # 处理返回数据
     if json_data:
