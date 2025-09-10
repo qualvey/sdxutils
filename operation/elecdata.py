@@ -1,14 +1,66 @@
 from openpyxl import load_workbook
-import os
 import tkinter as tk
 from datetime import datetime, date, timedelta
-import json
 from tools import env
 from tools.logger import get_logger
+import sys
 
 import sqlite3
+from PySide6.QtWidgets import (
+    QApplication, QWidget, QVBoxLayout, QLabel, QLineEdit, QPushButton
+)
+from PySide6.QtCore import Qt
+from datetime import datetime
 
 logger = get_logger(__name__)
+#用电量使用整数
+class UserCanceledException(Exception):
+    pass
+
+
+
+class InputWindow(QWidget):
+    def __init__(self, search_date:datetime):
+        super().__init__()
+        self.value = None
+        self.setWindowTitle("输入电表数据")
+        self.setFixedSize(300, 150)
+
+        layout = QVBoxLayout()
+
+        self.label_title = QLabel(f"请输入用电量：{search_date.strftime('%Y-%m-%d')}")
+        layout.addWidget(self.label_title, alignment=Qt.AlignCenter)
+
+        self.entry = QLineEdit()
+        layout.addWidget(self.entry)
+
+        self.btn = QPushButton("确认")
+        self.btn.clicked.connect(self.on_submit)
+        layout.addWidget(self.btn, alignment=Qt.AlignCenter)
+
+        self.label_status = QLabel("")
+        layout.addWidget(self.label_status, alignment=Qt.AlignCenter)
+
+        self.entry.returnPressed.connect(self.on_submit)
+
+        self.setLayout(layout)
+
+    def on_submit(self):
+        try:
+            self.value = float(self.entry.text())
+            self.close()
+        except ValueError:
+            self.label_status.setText("请输入有效数字")
+
+def GUI_input(search_date:str) -> float | None:
+    app = QApplication(sys.argv)
+    window = InputWindow(search_date)
+    window.show()
+    app.exec()
+
+    if window.value is None:
+        raise UserCanceledException("用户未输入有效电量，退出。")
+    return window.value
 
 def init_db():
 # 连接到 SQLite 数据库（如果文件不存在，会自动创建）
@@ -28,6 +80,15 @@ def init_db():
     '''
     cursor.execute(create_table_query)
     conn.commit()
+def get_ele_usage(search_date):
+    app = QApplication(sys.argv)
+    window = InputWindow(search_date)
+    window.show()
+    app.exec()
+
+    if window.value is None:
+        raise UserCanceledException("用户未输入有效电量，退出。")
+    return window.value
 
 def is_float(s):
     try:
@@ -120,36 +181,7 @@ def get_elecUsage(datetime_obj: datetime) -> float:
         ele_usage = if_exist
     else:
         # GUI 输入窗口
-        root = tk.Tk()
-        root.title("输入电表数据")
-        root.geometry('300x150')
-
-        input_result = {'value': 0.0  }
-
-        def on_enter_pressed(event=None):
-            val = entry.get()
-            try:
-                input_result['value'] = float(val)
-                root.quit()
-            except ValueError:
-                label.config(text="请输入有效数字")
-
-        tk.Label(root, text=f"请输入用电量：{search_date.strftime('%Y-%m-%d')}").pack(pady=10)
-        entry = tk.Entry(root)
-        entry.pack()
-        entry.bind("<Return>", on_enter_pressed)
-
-        tk.Button(root, text="确认", command=on_enter_pressed).pack(pady=10)
-        label = tk.Label(root, text="")
-        label.pack()
-
-        root.mainloop()
-        root.destroy()
-
-        if input_result['value'] is None:
-            raise UserCancledException("用户未输入有效电量，退出。")
-
-        ele_usage = input_result['value']
+        ele_usage = get_ele_usage(search_date)
         update_sql_elec(datetime_obj, ele_usage)
 
     # 计算差值
@@ -189,7 +221,7 @@ def get_elecUsage(datetime_obj: datetime) -> float:
             raise UserCancledException("用户取消，电表模块退出")
 
     result = result * 80
-    return float(result)
+    return int(round(result))
 
 if __name__ == "__main__":
     a = get_row_by_date(ws, "a")

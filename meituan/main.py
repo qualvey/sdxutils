@@ -1,4 +1,3 @@
-from logging import log
 import requests
 import json
 from datetime import datetime, timedelta
@@ -8,7 +7,6 @@ import os
 from tools import env
 from tools import logger as mylogger
 from typing import Any, Dict, Tuple, Optional
-from requests.exceptions import RequestException
 
 logger = mylogger.get_logger(__name__)
 
