@@ -1,7 +1,7 @@
 import shutil
 import os
 import argparse
-from datetime                import datetime, date, timedelta 
+from datetime                import datetime,  timedelta 
 
 from openpyxl                import load_workbook , Workbook
 from openpyxl.cell.rich_text import  TextBlock, TextBlock
@@ -124,22 +124,27 @@ if __name__ == "__main__":
     parser.add_argument("-dc", "--dateconfig", action="store_true", help="使用配置文件的日期")
     parser.add_argument("-now", "--today", action="store_true", help="使用今天作为日期")
     parser.add_argument("-ne", "--no-elecfrom openpyxl import Workbook", action="store_true", help="不输入电表数据")
-    parser.add_argument("-dt", "--date", type=str  , help="指定日期")
+    parser.add_argument("-d", "--date", type=str  , help="日期 (mm-dd 格式)")
 
     args = parser.parse_args()
-
-    yesterday: datetime = date.today() - timedelta(days=1)
+    year = datetime.now().year
+    yesterday: datetime = datetime.now() - timedelta(days=1)
     working_date_str:str = yesterday.strftime('%Y-%m-%d')
-    working_datetime      = datetime.combine(yesterday, datetime.min.time())
+    working_datetime:datetime      = datetime.combine(yesterday, datetime.min.time())
 
     if args.dateconfig:
-        working_datetime = env.working_datetime
-        working_datetime_date  = working_datetime.date()
+        date:datetime = env.working_datetime
+        working_datetime_date  = date.date()
     if args.today:
         working_datetime_date = datetime.today()
         working_datetime      = datetime.combine(working_datetime_date, datetime.min.time())
     if args.date:
-        working_datetime:datetime   = datetime.strptime(args.date, "%Y-%m-%d")
+        date_str = f"{year}-{args.date}"
+        try:
+            working_datetime:datetime = datetime.strptime(date_str, "%Y-%m-%d")
+            print("解析后的 datetime:", working_datetime)
+        except ValueError:
+            print("日期格式错误，应为 mm-dd，例如 09-11")
 
     else:
         try:

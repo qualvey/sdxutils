@@ -1,8 +1,5 @@
 
-from io import StringIO
 from tools import env, logger
-from PIL import Image
-from io import BytesIO
 import xml.etree.ElementTree as ET
 import os
 
@@ -65,6 +62,7 @@ def get_uuid():
     uuid = root.find('uuid').text
     if not uuid:
         logger.error('uuid error~!!')
+
     return uuid
 
 def show_img(response_qrcode):
