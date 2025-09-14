@@ -4,7 +4,7 @@ import platform
 import pytz
 import logging
 
-from datetime   import datetime, date
+from datetime   import datetime 
 
 logger = logging.getLogger(__name__)
 
@@ -79,7 +79,7 @@ with open(config_file, 'r',encoding="UTF-8") as config:
     configjson = json.loads(config.read())
 
 
-working_datetime = datetime.strptime(configjson['date'], "%Y-%m-%d")
+working_datetime:datetime = datetime.strptime(configjson['date'], "%Y-%m-%d")
 if platform.system() == "Windows":
     # On Windows, use %#m and %#d to remove leading zeros
     date_str = working_datetime.strftime("%#m月%#d日")

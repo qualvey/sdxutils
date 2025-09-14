@@ -1,7 +1,7 @@
 import shutil
 import os
 import argparse
-from datetime               import datetime, date, timedelta 
+from datetime                import datetime,  timedelta 
 
 from openpyxl                import load_workbook , Workbook
 from openpyxl.cell.rich_text import  TextBlock, TextBlock
@@ -19,11 +19,13 @@ from tools import  logger as mylogger
 
 from xlutils.xlUtil import *
 
+from typing import cast
+from concurrent.futures import ThreadPoolExecutor
+
 machian_sum = 76
 
 logger = mylogger.get_logger(__name__)
 
-from typing import cast
 
 def init_sheet(working_datetime: datetime, source_file: str) -> Workbook :
     '''
@@ -67,6 +69,8 @@ def load_data(elec_usage: float, mt: float, dy: float, english: dict, cn_en_map:
 
     if main_data["上机时长"] is not None:
         main_data["上机时长"]   = round(main_data["上机时长"] /60, 2)
+
+    main_data.setdefault("口碑",0.001)
 
     return main_data
 
@@ -120,22 +124,27 @@ if __name__ == "__main__":
     parser.add_argument("-dc", "--dateconfig", action="store_true", help="使用配置文件的日期")
     parser.add_argument("-now", "--today", action="store_true", help="使用今天作为日期")
     parser.add_argument("-ne", "--no-elecfrom openpyxl import Workbook", action="store_true", help="不输入电表数据")
-    parser.add_argument("-dt", "--date", type=str  , help="指定日期")
+    parser.add_argument("-d", "--date", type=str  , help="日期 (mm-dd 格式)")
 
     args = parser.parse_args()
-
-    yesterday: datetime = date.today() - timedelta(days=1)
+    year = datetime.now().year
+    yesterday: datetime = datetime.now() - timedelta(days=1)
     working_date_str:str = yesterday.strftime('%Y-%m-%d')
-    working_datetime      = datetime.combine(yesterday, datetime.min.time())
+    working_datetime:datetime      = datetime.combine(yesterday, datetime.min.time())
 
     if args.dateconfig:
-        working_datetime = env.working_datetime
-        working_datetime_date  = working_datetime.date()
+        date:datetime = env.working_datetime
+        working_datetime_date  = date.date()
     if args.today:
         working_datetime_date = datetime.today()
         working_datetime      = datetime.combine(working_datetime_date, datetime.min.time())
     if args.date:
-        working_datetime:datetime   = datetime.strptime(args.date, "%Y-%m-%d")
+        date_str = f"{year}-{args.date}"
+        try:
+            working_datetime:datetime = datetime.strptime(date_str, "%Y-%m-%d")
+            print("解析后的 datetime:", working_datetime)
+        except ValueError:
+            print("日期格式错误，应为 mm-dd，例如 09-11")
 
     else:
         try:
@@ -171,12 +180,28 @@ if __name__ == "__main__":
         "新会员"    :     "newMember"
     }
 
-    mt, mt_len = get_meituanSum(working_datetime)
+
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        # submit 会立即返回 Future 对象
+        meituan_data = executor.submit(get_meituanSum,working_datetime)
+        meituan_good = executor.submit(get_mtgood_rates,working_datetime.strftime('%Y-%m-%d'))
+        douyin_data = executor.submit(final_out,working_datetime)
+        douyin_good = executor.submit(get_dygood_rate,working_datetime)
+
+        # 调用 result() 获取函数返回值（会等待线程完成）
+        mt,mt_len = meituan_data.result()
+        mt_good_num = meituan_good.result()
+        douyindata = douyin_data.result()
+        dy_good_num = douyin_good.result()
+
+#    mt, mt_len = get_meituanSum(working_datetime)
+#    douyindata = final_out(working_datetime)
+#    mt_good_num = get_mtgood_rates(working_datetime.strftime('%Y-%m-%d'))
+#    dy_good_num = get_dygood_rate(working_datetime)
 
     if not mt:
         logger.warning('美团数据没拿到')
 
-    douyindata = final_out(working_datetime)
     if douyindata:
         dy, dy_len = douyindata
     else:
@@ -226,8 +251,6 @@ if __name__ == "__main__":
 
     special_mark(ws = ws, special_data = specialFee_list, start_col='H', end_col='K' )
 
-    mt_good_num = get_mtgood_rates(working_datetime.strftime('%Y-%m-%d'))
-    dy_good_num = get_dygood_rate(working_datetime)
     ota_comment(ws,mt_len, dy_len,mt_good_num,dy_good_num, 'H')
     handle_headers(ws)
     save(save_path, wb)

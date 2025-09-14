@@ -158,7 +158,7 @@ def get_dygood_rate(date):
     
    #几个id可能会改变 
     query  = {
-        "life_account_ids": "7494586712149051455",
+        "life_account_ids": "7532754477666748459",
         "life_account_id": "7143570945559037956",
         "root_life_account_id": "7143570945559037956",
         "poi_id": "6828149180763080708",
@@ -170,7 +170,7 @@ def get_dygood_rate(date):
         "cursor": "0",
         "count": "10",
         "top_rate_ids": "",
-        "reply_display_by_level": "1",
+        "reply_display_by_level": "",
         "store_type": "2",
         "source": "1"
         }
@@ -183,6 +183,9 @@ def get_dygood_rate(date):
         )
 
     data = response.json()
+    with open('comit.json','w', encoding='utf-8') as fp:
+        json.dump(data,fp,indent=4,ensure_ascii=False)
+    #breakpoint()
     response_list = data.get('data').get('reviews')
     logger.debug('get_good_rate:\n')
     logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))
