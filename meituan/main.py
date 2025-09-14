@@ -4,6 +4,7 @@ import json
 from datetime import datetime, timedelta
 import argparse
 import os
+import sys
 
 from tools import env
 from tools import logger as mylogger
@@ -82,6 +83,16 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
 
         if not json_data:
             logger.error('美团请求返回空值，请检查 cookie 是否失效')
+            chosen = input("还要继续执行吗? N/y ").strip() or "N"
+
+            match chosen.lower():
+                case "y":
+                    print("继续执行...")
+                    # 执行逻辑
+                case _:
+                    print("程序终止，请检查Cookies")
+                    sys.exit(2)
+
 
         # 保存 JSON 响应
         os.makedirs(f"{proj_dir}/meituan", exist_ok=True)
@@ -92,7 +103,17 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
 #        logger.error(f"请求失败: {e}")
     except json.JSONDecodeError:
         logger.error("响应不是合法 JSON")
-        logger.error(response)
+        
+        logger.error(locals().get("response", "没有美团的返回数据"))
+        chosen = input("还要继续执行吗? N/y ").strip() or "N"
+
+        match chosen.lower():
+            case "y":
+                print("继续执行...")
+                # 执行逻辑
+            case _:
+                print("程序终止，请检查Cookies")
+                sys.exit(2)
 
     # 处理返回数据
     if json_data:
