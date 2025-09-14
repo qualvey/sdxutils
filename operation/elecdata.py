@@ -70,16 +70,9 @@ def query_data(date_str):
     for row in rows:
         print(row)
         return(row[0])
-
-elecSheet   = env.elecUsage_file
-
-wb = load_workbook(elecSheet)
-#data_only = True 获取数据而不是公式
-#dataonly不能保存，保存就破坏公式了
-ws = wb.active
-
+    
 def get_row_by_date(worksheet,date:datetime,start_cell="A1",end_cell="A35") -> int | None:
-    date_str:str = date.date()
+    date_str:str = str(date.date())
     """
     参数：工作表，查找值<datatime>, 开始和终止的cell位置
     返回：第一个匹配到的cell行号
@@ -103,13 +96,7 @@ def get_row_by_date(worksheet,date:datetime,start_cell="A1",end_cell="A35") -> i
 
 class UserCancledException(Exception):
     pass
-def write_elecxl(elec_usage, target_row, destination):
-    if not target_row :
-        print('电表有问题，未获取正确的位置')
-        return 
-    ws[f"B{target_row}"].value = elec_usage
-    wb.save(elecSheet)
-    wb.save(destination)
+
 
 def get_elecUsage(datetime_obj: datetime) -> float:
     search_date = datetime_obj
@@ -192,5 +179,4 @@ def get_elecUsage(datetime_obj: datetime) -> float:
     return float(result)
 
 if __name__ == "__main__":
-    a = get_row_by_date(ws, "a")
-    #breakpoint()
+    pass
