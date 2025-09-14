@@ -240,9 +240,9 @@ def is_token_valid():
     token = data.get('token')
     if exp_timestamp:
         # 将时间戳转换为 datetime 对象
-        exp_datetime = datetime.utcfromtimestamp(exp_timestamp)
+        exp_datetime = datetime.fromtimestamp(exp_timestamp, tz=timezone.utc)
         # 获取当前 UTC 时间
-        current_datetime = datetime.utcnow()
+        current_datetime = datetime.now(timezone.utc)
         # 比较过期时间与当前时间
         if exp_datetime > current_datetime:
             return True, token

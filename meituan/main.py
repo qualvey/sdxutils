@@ -1,8 +1,10 @@
+from logging import log
 import requests
 import json
 from datetime import datetime, timedelta
 import argparse
 import os
+import sys
 
 from tools import env
 from tools import logger as mylogger
@@ -75,21 +77,43 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
 
     try:
         response = requests.post(url=mt_api, headers=headers, json=data, cookies=cookies)
+        #breakpoint()
         response.raise_for_status()
         json_data = response.json()
 
         if not json_data:
             logger.error('美团请求返回空值，请检查 cookie 是否失效')
+            chosen = input("还要继续执行吗? N/y ").strip() or "N"
+
+            match chosen.lower():
+                case "y":
+                    print("继续执行...")
+                    # 执行逻辑
+                case _:
+                    print("程序终止，请检查Cookies")
+                    sys.exit(2)
+
 
         # 保存 JSON 响应
         os.makedirs(f"{proj_dir}/meituan", exist_ok=True)
         with open(f"{proj_dir}/meituan/meituan.json", 'w', encoding="utf-8") as data_json:
             json.dump(json_data, data_json, ensure_ascii=False, indent=4)
 
-    except RequestException as e:
-        logger.error(f"请求失败: {e}")
+#    except RequestException as e:
+#        logger.error(f"请求失败: {e}")
     except json.JSONDecodeError:
         logger.error("响应不是合法 JSON")
+        
+        logger.error(locals().get("response", "没有美团的返回数据"))
+        chosen = input("还要继续执行吗? N/y ").strip() or "N"
+
+        match chosen.lower():
+            case "y":
+                print("继续执行...")
+                # 执行逻辑
+            case _:
+                print("程序终止，请检查Cookies")
+                sys.exit(2)
 
     # 处理返回数据
     if json_data:
@@ -98,11 +122,13 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
         mt_len = data.get("recordSum", 0)
 
         i=0
+        ouput_price: str = " \n"
         if couponRecordDetails:
             logger.info('美团列表')
             for i, record in enumerate(couponRecordDetails, start=1):
                 price_str = record.get("salePrice", "")
-                logger.info(f'{price_str}\t')
+                #logger.info(f'{price_str}\t')
+                ouput_price += f" {price_str}\n"
 
                 try:
                     sale_price = float(price_str.replace("¥", "").strip())
@@ -111,6 +137,7 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
                     continue
 
                 sale_price_sum += sale_price
+            logger.info(ouput_price)
 
             sale_price_sum = round(sale_price_sum, 2)
             logger.info(f'总计 {i} 单')

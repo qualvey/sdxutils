@@ -1,18 +1,13 @@
 [project]
-name = "sdxutils"
-version = "0.1.0"
-description = "Add your description here"
-readme = "README.md"
-requires-python = ">=3.13"
+name = "sdxok"
+version = "1.0"
 dependencies = [
-    "openpyxl",
-    "requests",
-    "pytest",
-    "Pyqt6",
-    "mysql-connector-python",
-    "pytz",
-    "coloredlogs",
-    "Pillow",
-    "opencv-python"
-
+  "colorama>=0.4.6",
+  "coloredlogs>=15.0.1",
+  "opencv-python>=4.12.0.88",
+  "openpyxl",
+  "pillow>=11.3.0",
+  "pyside6>=6.9.1",
+  "pytz>=2025.2",
+  "requests>=2.32.4",
 ]

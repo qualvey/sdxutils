@@ -15,6 +15,7 @@ from tools import env, iheader, find, logger
 logger = logger.get_logger(__name__)
 
 userid_map = get_userid.get_userid()
+breakpoint()
 
 work_time_xl = f"{env.proj_dir}/et/2025年3月工时表.xlsx"
 workbook = load_workbook(work_time_xl)
@@ -26,7 +27,7 @@ today_datetime = datetime.combine(today, time.min)
 
 duration_sum = {}
 
-def get_previous_week_range(dt):
+def get_previous_week_range(dt) -> list[datetime]:
     # 计算当前日期是星期几，星期一为0，星期日为6
     current_weekday = dt.weekday()
     # 计算上周日距离当前日期的天数
@@ -37,6 +38,7 @@ def get_previous_week_range(dt):
     last_monday = last_sunday - timedelta(days=6)
     last_monday = datetime.combine(last_monday, time.min)
     week_dates = [last_monday + timedelta(days=i) for i in range(7)]
+
     return week_dates
 
 weekdays = get_previous_week_range(today)
@@ -47,9 +49,8 @@ mon = str(obj_mon)
 sun = str(obj_sun)
 
 logger.debug(f'请求的日期范围:{str(mon),str(sun)}' )
-print(f'请求的日期范围:{str(mon),str(sun)}' )
 
-def get_total_wduration(data_json):
+def get_total_wduration(data_json) -> int:
     get_total_wduration.call_count+=1
     sum = 0
     if data_json['data']['total'] == 7:
@@ -66,7 +67,7 @@ def get_total_wduration(data_json):
 
 get_total_wduration.call_count = 0
 
-def  write_to_file(response_data):
+def  write_to_file(response_data) -> None:
     try:
         new_data = response_data.json()
         duration = get_total_wduration(new_data)
@@ -100,7 +101,8 @@ netloc = 'hub.sdxnetcafe.com'
 path = '/api/admin/work/attendance/list'
 params =''
 fragment = ''
-def request_get(userid):
+
+def request_get(userid) -> dict:
     query = {
         "startTm":  mon,
         "endTm":    sun,
@@ -115,7 +117,7 @@ def request_get(userid):
     response_user  = requests.get(url, headers=iheader.headers)
     return response_user.json()
 
-def work_duration_all():
+def work_duration_all() -> None:
     work_duration_json_map = {}
     work_duration_time_map = {}
 
@@ -126,7 +128,7 @@ def work_duration_all():
         print(f'调用了{get_total_wduration.call_count}次')
         duration_sum[name] = duration_aday
 
-def get_json_person():
+def get_json_person() -> dict:
     members_json = {}
     for name, id in userid_map.items():
         data_json =  request_get(id)
@@ -138,7 +140,7 @@ yahei_red_8 = InlineFont(rFont='Microsoft YaHei',
                          )
 
 b = TextBlock
-def to_xl(worksheet, json):
+def to_xl(worksheet, json) -> None | int:
 
     worktime_ist = json['data']['rows']
     name         = json['data']['rows'][0]['userName']
@@ -186,8 +188,7 @@ for  num in duration_sum.values():
     sum += num
 
 if __name__ == "__main__":
-    get_value_days = consume_duration.get_value_days
-    consume_duration = get_value_days(weekdays)
+    consume_duration = consume_duration.get_sum(weekdays)
     print("上机时长",consume_duration)
     print("总工时",sum)
     print('人效', consume_duration/sum)

@@ -2,10 +2,10 @@ import requests
 import json
 from tools import env
 from tools.iheader import headers
-from datetime import time, datetime
-from tools import logger
+from datetime import  datetime
+from tools import logger as mylogger
 
-logger = logger.get_logger(__name__)
+logger = mylogger.get_logger(__name__)
 
 def merge_data(all_data):
     merged_data = {}
@@ -18,10 +18,11 @@ def merge_data(all_data):
 
         with open(target_file, "w", encoding="UTF-8") as target:
                 json.dump(merged_data, target, ensure_ascii=False, indent=4)
-            #logger.info(f"合并后的 API 数据已写入 {target_file} 文件中。")
+                logger.info(f"合并后的 API 数据已写入 {target_file} 文件中。")
     else:
         logger.error("API 响应不是全部为 JSON，无法合并。")
     return merged_data
+
 
 def resolve_operation_data(datetime_obj):
 

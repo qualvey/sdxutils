@@ -70,15 +70,9 @@ def query_data(date_str):
     for row in rows:
         print(row)
         return(row[0])
-
-elecSheet   = env.elecUsage_file
-
-wb = load_workbook(elecSheet)
-#data_only = True 获取数据而不是公式
-#dataonly不能保存，保存就破坏公式了
-ws = wb.active
-
-def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35"):
+    
+def get_row_by_date(worksheet,date:datetime,start_cell="A1",end_cell="A35") -> int | None:
+    date_str:str = str(date.date())
     """
     参数：工作表，查找值<datatime>, 开始和终止的cell位置
     返回：第一个匹配到的cell行号
@@ -90,10 +84,10 @@ def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35"):
         for row in worksheet.iter_rows(min_row=min_row, max_row=max_row, min_col=min_col, max_col=max_col):
             for cell in row:
                 if isinstance(cell.value, datetime):  # 确保是 datetime 类型
-                    if cell.value.date() == search_value:  # 对比日期部分
-                        print('命中')
-                        print(cell.row)
+                    if cell.value.date() == date_str:  # 对比日期部分
+                        #breakpoint()
                         return cell.row  # 直接返回行号
+
         return None  # 未找到匹配值
 
     except KeyError:
@@ -102,15 +96,9 @@ def get_row_by_date(worksheet,search_value,start_cell="A1",end_cell="A35"):
 
 class UserCancledException(Exception):
     pass
-def write_elecxl(elec_usage, target_row, destination):
-    if not target_row :
-        print('电表有问题，未获取正确的位置')
-        return 
-    ws[f"B{target_row}"].value = elec_usage
-    wb.save(elecSheet)
-    wb.save(destination)
 
-def get_elecUsage(datetime_obj):
+
+def get_elecUsage(datetime_obj: datetime) -> float:
     search_date = datetime_obj
     if_exist = query_data(search_date.strftime('%Y-%m-%d'))
 
@@ -123,7 +111,7 @@ def get_elecUsage(datetime_obj):
         root.title("输入电表数据")
         root.geometry('300x150')
 
-        input_result = {'value': None}
+        input_result = {'value': 0.0  }
 
         def on_enter_pressed(event=None):
             val = entry.get()
@@ -188,4 +176,7 @@ def get_elecUsage(datetime_obj):
             raise UserCancledException("用户取消，电表模块退出")
 
     result = result * 80
-    return int(result)
+    return float(result)
+
+if __name__ == "__main__":
+    pass
