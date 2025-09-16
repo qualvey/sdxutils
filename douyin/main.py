@@ -11,11 +11,16 @@ from decimal import Decimal, ROUND_HALF_UP
 
 logger = get_logger(__name__)
 
-cookie          = env.configjson['cookies']['dy']
+cookie:str          = env.configjson['cookies']['dy']
+# Convert cookie string to dict if necessary
+def parse_cookie_string(cookie_str: str) -> dict:
+    return dict(item.strip().split("=", 1) for item in cookie_str.split(";") if "=" in item)
 
-output_path = f"{env.proj_dir}/douyin/douyin.json"
+cookies_dict = parse_cookie_string(cookie) if isinstance(cookie, str) else cookie
 
-common_headers = {
+output_path:str = f"{env.proj_dir}/douyin/douyin.json"
+
+common_headers:dict = {
         "Accept": "application/json, text/plain, */*",
         "Accept-Language": "zh,en-US;q=0.7,en;q=0.3",
         "Content-Type": "application/json",
@@ -33,7 +38,7 @@ common_headers = {
         "Sec-Fetch-Site": "same-origin",
         "Priority": "u=0"
 }
-specific_headers = {
+specific_headers:dict = {
         "x-tt-trace-id": "00-833c459518ddb35cb728491cb-833c459518ddb35c-01",
         "rpc-persist-session-id": "100281b8-90cf-4fe7-acdc-4568a43d7667",
         "x-secsdk-csrf-token": "000100000001ca5a6af103350fc8059c84b0e50942e3f3a8686a721e2fdce8ba3cb75158d32118377800f3fe4702",
@@ -55,7 +60,7 @@ def fetch_douyin_data(
     output_path: Optional[str] = None,
     max_retries: int = 5,
     delay: int = 2
-):
+ ) -> Optional[dict]:
     url = "https://life.douyin.com/life/trade_view/v1/verify/verify_record_list/"
 
     params  = {
@@ -117,7 +122,7 @@ def fetch_douyin_data(
             else:
                 raise DouyinRequestError("抖音已达到最大重试次数，放弃请求")
 
-def get_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
+def resolve_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
     total: Decimal = Decimal("0.0")
     output: str = "\n"
     try:
@@ -175,11 +180,13 @@ def get_dygood_rate(date):
         "source": "1"
         }
 
+
+
     response = requests.get(
         url = url ,
         params = query,
         headers = headers,
-        cookies = cookie
+        cookies = cookies_dict
         )
 
     data = response.json()
@@ -194,10 +201,10 @@ def get_dygood_rate(date):
 
 def final_out(date: datetime) ->  Optional[Tuple[Decimal, int]]:
     try:
-        data = fetch_douyin_data(date = date, headers=headers, cookies=cookie, output_path=output_path )
+        data = fetch_douyin_data(date = date, headers=headers, cookies=cookies_dict, output_path=output_path )
         if not data:
             raise ValueError('请求返回失败')
-        result = get_douyin_data(data)
+        result = resolve_douyin_data(data)
         good_rate = get_dygood_rate(date)
         logger.info(f"好评数：{good_rate}")
         return result

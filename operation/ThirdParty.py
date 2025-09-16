@@ -5,6 +5,7 @@ import requests
 import math
 import json 
 from collections import defaultdict
+from datetime import datetime
 
 logger=mylogger.get_logger('third_party')
 
@@ -61,7 +62,7 @@ def gen_duplicated_item_dict(date_str: str, item_list:dict):
             third_type_ids[third_type].append(item_id)
             logger.warning(f'已经存在{third_type}，需要删除重新更新')
 
-def check_unique(date_str ):
+def check_unique(date_str ) -> dict:
 
     limit = 30
     startTm = date_str+' 00:00:00'
@@ -98,7 +99,7 @@ def delete(id: str):
         return 0
     return 0
 
-def ota_update(ota_name,date_obj, income) :
+def ota_update(ota_name:str,date_obj:datetime, income:int) -> dict:
     '''
         ota_name    <str>
         date_obj    <datetime.datetime> or <datetime.date>
