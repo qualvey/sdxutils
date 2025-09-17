@@ -17,8 +17,6 @@ from openpyxl                import load_workbook , Workbook
 from openpyxl.cell.rich_text import  TextBlock, TextBlock
 from openpyxl.worksheet.worksheet import Worksheet
 
-from meituan.main       import get_meituanSum,  get_mtgood_rates
-from douyin.main        import final_out, get_dygood_rate
 
 from operation.main     import resolve_operation_data
 from operation          import ThirdParty
@@ -63,6 +61,18 @@ yahei_red_8 = InlineFont(rFont='Microsoft YaHei',
 
 left_alignment = Alignment(horizontal='left')
 center_alignment = Alignment(horizontal='center')
+
+ws: Worksheet
+special_data = []
+mt_len = 0
+dy_len = 0
+mtgood_num = 0
+dygood_num = 0
+end_datetime = datetime.today()
+elecusage = 0.0
+machian_sum = 76
+english = {}
+cn_en_map = {}
 
 def special_mark(ws, special_data, start_col, end_col, start_row=37, end_row=47):
 

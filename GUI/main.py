@@ -14,8 +14,10 @@ from openpyxl                import load_workbook , Workbook
 from openpyxl.cell.rich_text import  TextBlock, TextBlock
 from openpyxl.worksheet.worksheet import Worksheet
 
-from meituan.main       import get_meituanSum,  get_mtgood_rates
-from douyin.main        import final_out, get_dygood_rate
+# from meituan.main       import get_meituanSum,  get_mtgood_rates
+from douyin       import final_out, get_dygood_rate
+from meituan            import MeituanWorker
+
 
 from operation.main     import resolve_operation_data
 from operation          import ThirdParty
@@ -24,7 +26,7 @@ from specialFee         import main as specialFee
 from tools              import env
 from tools import  logger as mylogger
 logger = mylogger.get_logger(__name__)
-# from xlutils.xlUtil import *
+
 import xlutils.xlUtil as xlutils
 
 machian_sum = 76
@@ -36,7 +38,7 @@ import os
 import json
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QFileDialog, QLineEdit, QDoubleSpinBox
+    QLabel, QFileDialog, QLineEdit, QDoubleSpinBox,QMessageBox
 )
 
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
@@ -51,6 +53,33 @@ class MyApp(QWidget):
     DEFAULT_SPECIAL_LIST = []
     DEFAULT_ELEC_USAGE = 0.0
     DEFAULT_WS = None
+    mt =0 
+    mt_len = 0
+    mt_good_num = 0
+    
+   
+    working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+
+    def start_meituan_fetch(self):
+        self.worker = MeituanWorker(self.working_datetime, parent=self)
+        self.worker.finished.connect(self.on_meituan_finished)
+        self.worker.error.connect(self.on_meituan_error)
+        self.worker.start()
+
+    def on_meituan_finished(self, total: float, count: int, good_num: int):
+        # 更新界面显示
+        self.mt = total
+        self.mt_len = count
+        self.mt_good_num = good_num
+        print(f"美团总金额: {self.mt}, 订单数: {self.mt_len}, 好评数: {self.mt_good_num}")
+        pass
+
+    def on_meituan_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("美团数据错误")
+        box.setText(msg)
+        box.exec()
 
     def run_report(self):
         yesterday = datetime.today() - timedelta(days=1)
@@ -58,10 +87,8 @@ class MyApp(QWidget):
         working_date_str = yesterday.strftime('%Y-%m-%d')
 
         # 获取美团、抖音、运营等数据
-        try:
-            mt, mt_len = get_meituanSum(working_datetime)
-        except Exception:
-            mt, mt_len = self.DEFAULT_MT, self.DEFAULT_MT_LEN
+        self.start_meituan_fetch()  # 启动美团数据获取线程
+
         try:
             douyindata = final_out(working_datetime)
             if douyindata and douyindata[0] is not None and douyindata[1] is not None:
@@ -103,7 +130,7 @@ class MyApp(QWidget):
             missing_dates = xlutils.find_missing_dates(ws, working_datetime)
             logger.info(f'缺失数据的日期有: {missing_dates}')
             data_pure = xlutils.load_data(
-                elec_usage, mt, float(dy), english, {
+                elec_usage, self.mt, float(dy), english, {
                     "网费充值": "amountFee",
                     "提现本金": "withdrawPrincipal",
                     "找零": "checkoutDeposit",
@@ -130,9 +157,9 @@ class MyApp(QWidget):
 
             xlutils.insert_data(ws, data_pure, working_datetime, machian_sum=self.machine_count)
             xlutils.special_mark(ws=ws, special_data=specialFee_list, start_col='H', end_col='K')
-            mt_good_num = get_mtgood_rates(working_datetime.strftime('%Y-%m-%d'))
+            mt_good_num = self.mt_good_num
             dy_good_num = get_dygood_rate(working_datetime)
-            xlutils.ota_comment(ws, mt_len, dy_len, mt_good_num, dy_good_num, 'H')
+            xlutils.ota_comment(ws, self.mt_len, dy_len, mt_good_num, dy_good_num, 'H')
             xlutils.handle_headers(ws)
             # 保存路径由用户选择
             save_path = self.output_file
@@ -145,7 +172,7 @@ class MyApp(QWidget):
                 self.output_file = save_path
             save_dir = os.path.dirname(save_path)
             os.makedirs(save_dir, exist_ok=True)
-            xlutils.save(save_path, wb, source_file=self.selected_file, dir_str=save_dir)
+            xlutils.save(save_path, wb, source_file=self.selected_file or "", dir_str=save_dir)
             print(f"报表已保存: {save_path}")
         else:
             print("表格初始化失败，无法生成报表。")
@@ -159,6 +186,8 @@ class MyApp(QWidget):
         self.output_dir = self.last_dir  # 默认输出目录同上次目录
         self.save_name = "a.xlsx"
         self.output_file = os.path.join(self.output_dir,self.save_name) # 用户选择的保存文件路径
+        self.mt_cookie = ""
+        self.dy_cookie = ""
         
         self.electric_meter_value = 0
         self.machine_count = 76
@@ -193,7 +222,11 @@ class MyApp(QWidget):
             "electric_meter_value": self.electric_meter_value,
             "machine_count": self.machine_count,
             "output_dir":self.output_dir,
-            "save_name": self.save_name or None
+            "save_name": self.save_name or None,
+            "cookies":{
+                "mt": self.mt_cookie,
+                "dy": self.dy_cookie
+            }
         }
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
