@@ -114,7 +114,6 @@ class MyApp(QWidget):
         self.get_op_data()        # 启动运营数据获取线程
         self.get_special_data()  # 获取特免数据
 
-       
         try:
             print(f"获取特免数据")
             specialFee_list, special_sum = specialFee.get_specialFee(working_datetime)
