@@ -17,14 +17,10 @@ from openpyxl                import load_workbook , Workbook
 from openpyxl.cell.rich_text import  TextBlock, TextBlock
 from openpyxl.worksheet.worksheet import Worksheet
 
-
-from operation.main     import resolve_operation_data
 from operation          import ThirdParty
 from operation          import elecdata as electron
 from specialFee         import main as specialFee
 from tools              import env
-
-
 
 font_wenquan = Font(name='WenQuanYi Zen Hei',
                 size=11,
@@ -73,6 +69,24 @@ elecusage = 0.0
 machian_sum = 76
 english = {}
 cn_en_map = {}
+
+def init_sheet(working_datetime: datetime, source_file: str) -> Workbook :
+    '''
+        return workbook
+    '''
+    logger.info("init_sheet")
+    working_sheetname = f'{working_datetime.month}月'
+    wb = load_workbook(source_file)
+
+    if working_sheetname in wb.sheetnames:
+        ws = wb[working_sheetname]
+        wb.active = ws
+        logger.info(f'操作的worksheet{wb}:{ws}')
+        ws['G37'].font = font_yahei
+        return wb
+    else:
+        logger.error(f'当前月份的工作表不存在，请手动检查.{working_sheetname}')
+        raise ValueError("出错了")
 
 def special_mark(ws, special_data, start_col, end_col, start_row=37, end_row=47):
 
@@ -248,24 +262,6 @@ def find_missing_dates(ws: Worksheet, end_datetime: datetime, col_date="A", col_
             missing_dates.append(date_value)
 
     return missing_dates
-
-def init_sheet(working_datetime: datetime, source_file: str) -> Workbook :
-    '''
-        return workbook
-    '''
-    logger.info("init_sheet")
-    working_sheetname = f'{working_datetime.month}月'
-    wb = load_workbook(source_file)
-
-    if working_sheetname in wb.sheetnames:
-        ws = wb[working_sheetname]
-        wb.active = ws
-        logger.info(f'操作的worksheet{wb}:{ws}')
-        ws['G37'].font = font_yahei
-        return wb
-    else:
-        logger.error(f'当前月份的工作表不存在，请手动检查.{working_sheetname}')
-        raise ValueError("出错了")
 
 def load_data(
         elec_usage: float, 

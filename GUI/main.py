@@ -19,17 +19,16 @@ from douyin       import final_out, get_dygood_rate
 from meituan            import MeituanWorker
 
 
-from operation.main     import resolve_operation_data
+from operation import OperationService
 from operation          import ThirdParty
 from operation          import elecdata as electron
-from specialFee         import main as specialFee
+
 from tools              import env
 from tools import  logger as mylogger
 logger = mylogger.get_logger(__name__)
 
-import xlutils.xlUtil as xlutils
 
-machian_sum = 76
+import xlutils.xlUtil as xlutils
 
 from typing import cast, Optional, Tuple
 from decimal import Decimal
@@ -40,8 +39,10 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QFileDialog, QLineEdit, QDoubleSpinBox,QMessageBox
 )
-
+from . import SpecialFeeWorker
+from . import OperationWorker
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
+
 class MyApp(QWidget):
     # 缺省参数常量
     DEFAULT_MT = 0
@@ -56,11 +57,11 @@ class MyApp(QWidget):
     mt =0 
     mt_len = 0
     mt_good_num = 0
+    machian_sum = 76
     
-   
     working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
 
-    def start_meituan_fetch(self):
+    def start_meituan_fetch(self):  
         self.worker = MeituanWorker(self.working_datetime, parent=self)
         self.worker.finished.connect(self.on_meituan_finished)
         self.worker.error.connect(self.on_meituan_error)
@@ -81,6 +82,28 @@ class MyApp(QWidget):
         box.setText(msg)
         box.exec()
 
+    def get_special_data(self):
+        self.special_worker = SpecialFeeWorker(self.working_datetime)
+        self.special_worker.finished.connect(self.on_special_finished)
+        self.special_worker.error.connect(self.on_special_error)
+        self.special_worker.start()
+        # 阻塞等待结果
+
+        self.special_worker.wait()
+
+    def on_special_finished(self, result: tuple):
+        special_list, special_sum = result
+        self.DEFAULT_SPECIAL_LIST = special_list
+        self.DEFAULT_SPECIAL_SUM = special_sum
+        print(f"特免数据获取成功: {special_list}, 总额: {special_sum}")
+        pass
+    def on_special_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("特免数据错误")
+        box.setText(msg)
+        box.exec()
+    
     def run_report(self):
         yesterday = datetime.today() - timedelta(days=1)
         working_datetime = datetime.combine(yesterday, datetime.min.time())
@@ -88,22 +111,10 @@ class MyApp(QWidget):
 
         # 获取美团、抖音、运营等数据
         self.start_meituan_fetch()  # 启动美团数据获取线程
+        self.get_op_data()        # 启动运营数据获取线程
+        self.get_special_data()  # 获取特免数据
 
-        try:
-            douyindata = final_out(working_datetime)
-            if douyindata and douyindata[0] is not None and douyindata[1] is not None:
-                dy, dy_len = douyindata
-            else:
-                dy, dy_len = self.DEFAULT_DY, self.DEFAULT_DY_LEN
-        except Exception:
-            dy, dy_len = self.DEFAULT_DY, self.DEFAULT_DY_LEN
-        try:
        
-            english = resolve_operation_data(working_datetime)
-            if not english:
-                english = self.DEFAULT_ENGLISH
-        except Exception:
-            english = self.DEFAULT_ENGLISH
         try:
             print(f"获取特免数据")
             specialFee_list, special_sum = specialFee.get_specialFee(working_datetime)
@@ -297,6 +308,7 @@ class MyApp(QWidget):
         layout.addWidget(self.start_btn)
 
         self.setLayout(layout)
+
     def update_save_name(self, text):
         self.save_name = self.save_name_edit.text().strip()
         self.output_file = os.path.join(self.output_dir, self.save_name)
@@ -343,6 +355,7 @@ class MyApp(QWidget):
             self.file_label.setText("未选择文件")
             self.selected_file = None
     def update_view(self):
+
         if self.selected_file:
             self.file_label.setText(self.selected_file)
         else:
@@ -355,7 +368,23 @@ class MyApp(QWidget):
             self.save_file_label.setText(self.output_file)
         else:
             self.save_file_label.setText("未选择保存文件")
+    def get_op_data(self):
+        self.worker = OperationWorker( self.working_datetime)
+        self.worker.finished.connect(self.on_op_finished)
+        self.worker.error.connect(self.on_op_error)
+        self.worker.start()
 
+    def on_op_finished(self, data: dict):
+        print(f"运营数据获取成功: {data}")
+        self.DEFAULT_ENGLISH = data
+        pass
+
+    def on_op_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("运营数据错误")
+        box.setText(msg)
+        box.exec()
     def start_process(self):
         # 只调用run_report，所有业务逻辑和异常在run_report中处理
         self.run_report()

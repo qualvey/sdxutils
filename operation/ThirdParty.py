@@ -31,6 +31,7 @@ headers = {}
 headers['Authorization'] =  Iheaders['Authorization']
 
 lines = raw_header.splitlines()
+
 for line in lines:
     # 跳过空行
     if line.strip():
@@ -41,6 +42,13 @@ for line in lines:
 
 saveurl = 'https://hub.sdxnetcafe.com/api/admin/third/income/save'
 
+class ThirdPartyError(Exception):
+    """第三方数据请求失败"""
+    pass
+
+class ThirdPartyResponseError(Exception):
+    """第三方数据返回异常"""
+    pass
 
 def get_list(page : int,limit : int, startTm=None, endTm=None) -> dict:
     list_thirdpaty = f'{scheme}{hostname}/api/admin/third/income/pageList?branchId=a92fd8a33b7811ea87766c92bf5c82be&startTm={startTm}&endTm={endTm}&page={page}&limit={limit}'
@@ -75,7 +83,7 @@ def check_unique(date_str ) -> dict:
     data_list = response_list['data']['rows']
 
     if total>limit:
-        pages = math.cell(total/limit)
+        pages = math.ceil(total/limit)
         for page in range(1,pages+1):
             response_list = get_list(page=page, limit=limit, startTm=startTm, endTm=endTm)
             logger.debug(f'重复的数据列表{response_list}')

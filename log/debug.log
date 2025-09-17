@@ -1,0 +1,2 @@
+ 缺失数据的日期有: [datetime.date(2025, 9, 11), datetime.date(2025, 9, 12), datetime.date(2025, 9, 13), datetime.date(2025, 9, 14), datetime.date(2025, 9, 15), datetime.date(2025, 9, 16)]	  - 2025-09-18 05:46:37,063  - INFO - GUI/main.py:142 
+.py:64 
