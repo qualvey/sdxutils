@@ -222,9 +222,6 @@ if __name__ == "__main__":
 
     specialFee_list, special_sum = specialFee.get_specialFee(working_datetime)        #可以排序
 
-
-
-
     wb: Workbook = init_sheet(working_datetime,source_file=source_file)
 
     ws  = wb.active

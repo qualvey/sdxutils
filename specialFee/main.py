@@ -74,7 +74,7 @@ class SpecialFee:
             max_reason_length = max(len(reason) for reason, _ in sorted_items)
 
             for index, (reason, total) in enumerate(sorted_items, start=1):
-                logger.info(reason)
+                # logger.info(reason)
                 raw_padding = (max_reason_length - len(reason)) * 3
                 padding_length = max(min(raw_padding, 3), 6)
                 width  = max_reason_length + padding_length

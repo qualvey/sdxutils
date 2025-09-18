@@ -11,7 +11,7 @@ from decimal import Decimal, ROUND_HALF_UP
 
 logger = get_logger(__name__)
 
-cookie:str          = env.configjson['cookies']['dy']
+cookie:str         = env.configjson['cookies']['dy']
 # Convert cookie string to dict if necessary
 def parse_cookie_string(cookie_str: str) -> dict:
     return dict(item.strip().split("=", 1) for item in cookie_str.split(";") if "=" in item)
@@ -52,189 +52,184 @@ class DouyinRequestError(Exception):
     """抖音数据请求失败（重试已达最大次数）"""
     pass
 
-def fetch_douyin_data(
-    date: datetime,
-    session: Optional[requests.Session] = None,
-    headers: Optional[dict] = None,
-    cookies: Optional[dict] = None,
-    output_path: Optional[str] = None,
-    max_retries: int = 5,
-    delay: int = 2
- ) -> Optional[dict]:
-    url = "https://life.douyin.com/life/trade_view/v1/verify/verify_record_list/"
+class DouyinService:
+    def __init__(self,date:datetime) -> None:
+        self.date = date
+        self.dy_rawdata = {}
+        self.data = {}  # Always initialize as dict
+        self.fetch_douyin_data()
+        self.resolve_douyin_data()
+        self.get_dygood_rate()
+      
 
-    params  = {
-        'page_index': 1,
-        'page_size' : 100,
-        'industry'  : 'industry_common', 
-        'root_life_account_id' : '7143570945559037956'
-    }
-    logger.info(f'抖音日期:{date}')
-
-    time_start = datetime(date.year, date.month, date.day)
-    time_end = time_start + timedelta(hours=23, minutes=59, seconds=59)
-
-    # 转换为 Unix 时间戳（单位：秒）
-    # datetime对象有timestamp方法
-    begin_timestamp = int(time_start.timestamp())
-    end_timestamp = int(time_end.timestamp())
-
-    post_data = {
-        "filter":{
-            "start_time": begin_timestamp,
-            "end_time": end_timestamp,
-            "poi_id_list":[],
-            "sku_id_list":[],
-            "product_option":[],
-            "is_market":False,
-            "is_market_poi":False
-        },
-        "is_user_poi_filter":False,
-        "is_expend_to_poi":True,
-        "auth_poi_extra_filter":{},
-        "industry":"industry_common",
-        "permission_common_param":{}
-    }
-    for attempt in range(max_retries):
-        try:
-            session = session or requests.Session()
-            response = session.post(url, params=params, json=post_data, headers=headers, cookies=cookies)
-            response.raise_for_status()  # 如果状态码不是 200，抛出异常
-            douyin_json = response.json()
-
-            if douyin_json:
-                logger.info("获取抖音数据成功.")
-                logger.debug(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
-
-                status_code = douyin_json.get("status_code")
-                if status_code == 4000100:
-                    raise ValueError("鉴权失败，cookie 可能过期")
-            with open(f"{output_path}", 'w', encoding='utf-8') as data_json:
-                json.dump(douyin_json, data_json, ensure_ascii=False, indent=4)
-
-            return douyin_json  # 请求成功，返回 JSON 数据
+    def fetch_douyin_data(self,
+        session: Optional[requests.Session] = None,
+        headers: Optional[dict] = headers,
+        cookies: Optional[dict] = cookies_dict,
+        output_path: Optional[str] = output_path,
+        max_retries: int = 5,
+        delay: int = 2
+    ) -> Optional[dict]:
         
-        except requests.exceptions.RequestException as e:
-            logger.error(f"请求发生错误（第 {attempt+1} 次尝试）：{e}")
+        url = "https://life.douyin.com/life/trade_view/v1/verify/verify_record_list/"
 
-            if attempt < max_retries - 1:  # 如果还有重试机会，等待后重试
-                time.sleep(delay)  # 等待 delay 秒后重试
-            else:
-                raise DouyinRequestError("抖音已达到最大重试次数，放弃请求")
+        params  = {
+            'page_index': 1,
+            'page_size' : 100, 
+            'root_life_account_id' : '7143570945559037956'
+        }
+        logger.info(f'抖音日期:{self.date}')
 
-def resolve_douyin_data(dy_json: dict) -> Tuple[Decimal, int]:
-    total: Decimal = Decimal("0.0")
-    output: str = "\n"
-    try:
-        dy_data = dy_json.get('data')
-        if dy_data is None:
-            raise ValueError('返回中缺少 "data" 字段')
-        
-        dy_list = dy_data.get('list')
-        if dy_list:
-            dy_len = len(dy_list)
-            logger.info("抖音列表")
-            for item in dy_list:
-                raw_amount = item['amount']['verify_amount']  # 单位是分？
-                amount = Decimal(raw_amount) / Decimal("100")  # 单位转元
-                #logger.info(f"{amount}")
-                output += f"{amount}\n"
-                total += amount
+        time_start = datetime(self.date.year, self.date.month, self.date.day)
+        time_end = time_start + timedelta(hours=23, minutes=59, seconds=59)
 
-            logger.info(output)
-        else:
-            dy_len = 0
-    except KeyError as e:
-        raise ValueError(f"解析数据失败：缺失关键字段 {e}") from e
+        # 转换为 Unix 时间戳（单位：秒）
+        # datetime对象有timestamp方法
+        begin_timestamp = int(time_start.timestamp())
+        end_timestamp = int(time_end.timestamp())
 
-    return total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP), dy_len
-
-def get_dygood_rate(date):
-
-    date_start = datetime(date.year, date.month, date.day)
-    date_end = date_start + timedelta(hours=23, minutes=59, seconds=59)
-
-    # 转换为 Unix 时间戳（单位：秒）
-    # datetime对象有timestamp方法
-    begin_timestamp = int(date_start.timestamp())
-    end_timestamp   = int(date_end.timestamp())
-
-    url      = "https://life.douyin.com/life/infra/v1/review/get_review_list/"
-    
-   #几个id可能会改变 
-    query  = {
-        "life_account_ids": "7494586712149051455",
-        "life_account_id": "7143570945559037956",
-        "root_life_account_id": "7143570945559037956",
-        "poi_id": "6828149180763080708",
-        "tags": "1,9,5,4,10,8,7,50,",
-        "sort_by": "2",
-        "query_time_start": begin_timestamp,
-        "query_time_end": end_timestamp,
-        "search_after": "",
-        "cursor": "0",
-        "count": "10",
-        "top_rate_ids": "",
-        "reply_display_by_level": "1",
-        "store_type": "2",
-        "source": "1"
+        post_data = {
+            "filter":{
+                "start_time": begin_timestamp,
+                "end_time": end_timestamp,
+                "poi_id_list":[],
+                "sku_id_list":[],
+                "product_option":[],
+                "is_market":False,
+                "is_market_poi":False
+            },
+            "is_user_poi_filter":False,
+            "is_expend_to_poi":True,
+            "auth_poi_extra_filter":{},
+            "industry":"industry_common",
+            "permission_common_param":{}
         }
 
+        for attempt in range(max_retries):
+            try:
+                session = session or requests.Session()
+                response = session.post(url, params=params, json=post_data, headers=headers, cookies=cookies)
+                response.raise_for_status()  # 如果状态码不是 200，抛出异常
+                douyin_json = response.json()
 
+                if douyin_json:
+                    logger.info("获取抖音数据成功.")
+                    logger.info(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
 
-    response = requests.get(
-        url = url ,
-        params = query,
-        headers = headers,
-        cookies = cookies_dict
-        )
+                    status_code = douyin_json.get("status_code")
+                    if status_code == 4000100:
+                        raise ValueError("鉴权失败，cookie 可能过期")
+                with open(f"{output_path}", 'w', encoding='utf-8') as data_json:
+                    json.dump(douyin_json, data_json, ensure_ascii=False, indent=4)
+                self.dy_rawdata = douyin_json
+                return douyin_json  # 请求成功，返回 JSON 数据
+            
+            except requests.exceptions.RequestException as e:
+                logger.error(f"请求发生错误（第 {attempt+1} 次尝试）：{e}")
 
-    data = response.json()
-    response_list = data.get('data').get('reviews')
-    logger.debug('get_good_rate:\n')
-    logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))
-    if response_list is not None:
-        list_len = len(response_list)
-        return list_len
-    else:
-        return 0
+                if attempt < max_retries - 1:  # 如果还有重试机会，等待后重试
+                    time.sleep(delay)  # 等待 delay 秒后重试
+                else:
+                    raise DouyinRequestError("抖音已达到最大重试次数，放弃请求")
 
-def final_out(date: datetime) ->  Optional[Tuple[Decimal, int]]:
-    try:
-        data = fetch_douyin_data(date = date, headers=headers, cookies=cookies_dict, output_path=output_path )
-        if not data:
-            raise ValueError('请求返回失败')
-        result = resolve_douyin_data(data)
-        good_rate = get_dygood_rate(date)
-        logger.info(f"好评数：{good_rate}")
-        return result
-    except Exception as e:
-        logger.warning(f"final_out 失败：{e}")
-        return None
+    def resolve_douyin_data(self) -> Tuple[Decimal, int]:
+        total: Decimal = Decimal("0.0")
+        output: str = "\n"
+        dy_json = self.dy_rawdata
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="抖音模块")
-    parser.add_argument("-n", "--now",  action = "store_true", help="今天")
-    parser.add_argument("-d", "--date", type=str, help="指定日期")
-    args = parser.parse_args()
-    if args.date:
-        date = datetime.strptime(args.date, "%Y-%m-%d")
-        logger.info(f'date: {date}')
-        data = final_out(date)
-        if data:
-            sum, len_of_list = data
-    if args.now:
-        date = datetime.today()
-        logger.info(f'date: {date}')
-        data = final_out(date)
-        if data:
-            sum, len_of_list = data
-        good_rates = get_dygood_rate(date)
-        logger.info(f'好评数量：{good_rates}')
-    else:
-        data  =  final_out(datetime.today() - timedelta(days=1))
-        if data:
-            sum, len_of_list = data
+        if not dy_json:
+            raise ValueError("没有可解析的抖音数据")
+        try:
+            dy_data = dy_json.get('data')
+            if dy_data is None:
+                raise ValueError('返回中缺少 "data" 字段')
+            
+            dy_list = dy_data.get('list')
+            if dy_list:
+                dy_len = len(dy_list)
+                logger.info("抖音列表")
+                for item in dy_list:
+                    raw_amount = item['amount']['verify_amount']  # 单位是分？
+                    amount = Decimal(raw_amount) / Decimal("100")  # 单位转元
+                    #logger.info(f"{amount}")
+                    output += f"{amount}\n"
+                    total += amount
 
-    logger.info(f"抖音总金额: {sum}")
+                logger.info(output)
+            else:
+                dy_len = 0
+        except KeyError as e:
+            raise ValueError(f"解析数据失败：缺失关键字段 {e}") from e
+        dy_total = total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
+        if not isinstance(self.data, dict):
+            self.data = {}
+        self.data['dy_total'] = float(dy_total)
+        self.data['dy_count'] = dy_len
+        return dy_total , dy_len
+
+    def get_dygood_rate(self) -> int:
+        date = self.date
+        date_start = datetime(date.year, date.month, date.day)
+        date_end = date_start + timedelta(hours=23, minutes=59, seconds=59)
+
+        # 转换为 Unix 时间戳（单位：秒）
+        # datetime对象有timestamp方法
+        begin_timestamp = int(date_start.timestamp())
+        end_timestamp   = int(date_end.timestamp())
+
+        url      = "https://life.douyin.com/life/infra/v1/review/get_review_list/"
+        
+    #几个id可能会改变 
+        query  = {
+            "life_account_ids": "7494586712149051455",
+            "life_account_id": "7143570945559037956",
+            "root_life_account_id": "7143570945559037956",
+            "poi_id": "6828149180763080708",
+            "tags": "1,9,5,4,10,8,7,50,",
+            "sort_by": "2",
+            "query_time_start": begin_timestamp,
+            "query_time_end": end_timestamp,
+            "search_after": "",
+            "cursor": "0",
+            "count": "10",
+            "top_rate_ids": "",
+            "reply_display_by_level": "1",
+            "store_type": "2",
+            "source": "1"
+            }
+        response = requests.get(
+            url = url ,
+            params = query,
+            headers = headers,
+            cookies = cookies_dict
+            )
+
+        data = response.json()
+        response_list = data.get('data').get('reviews')
+        logger.debug('get_good_rate:\n')
+        logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))
+        if response_list is not None:
+            list_len = len(response_list)
+            if not isinstance(self.data, dict):
+                self.data = {}
+            self.data['dy_good'] = list_len
+
+            return list_len
+        else:
+            self.data['dy_good'] = 0
+            return 0
+
+    def final_out(self) ->  Optional[Tuple[Decimal, int]]:
+        try:
+            data = self.fetch_douyin_data( headers=headers, cookies=cookies_dict, output_path=output_path )
+            if not data:
+                raise ValueError('请求返回失败')
+            result = self.resolve_douyin_data()
+            good_rate = self.get_dygood_rate()
+            logger.info(f"好评数：{good_rate}")
+            return result
+        except Exception as e:
+            logger.warning(f"final_out 失败：{e}")
+            return None
+
 

@@ -1,47 +1,29 @@
-
-# 保证根目录在 sys.path，便于包导入
-import sys
-import os
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 # gui_main.py
 
-import shutil
-import os
-import argparse
+import os,sys, json, subprocess
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 from datetime               import datetime, date, timedelta 
-
-from openpyxl                import load_workbook , Workbook
-from openpyxl.cell.rich_text import  TextBlock, TextBlock
-from openpyxl.worksheet.worksheet import Worksheet
-
 # from meituan.main       import get_meituanSum,  get_mtgood_rates
-from douyin       import final_out, get_dygood_rate
-from meituan            import MeituanWorker
-
-
-from operation import OperationService
-from operation          import ThirdParty
 from operation          import elecdata as electron
-
-from tools              import env
 from tools import  logger as mylogger
 logger = mylogger.get_logger(__name__)
 
-
-import xlutils.xlUtil as xlutils
-
 from typing import cast, Optional, Tuple
-from decimal import Decimal
-import sys
-import os
-import json
+
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
-    QLabel, QFileDialog, QLineEdit, QDoubleSpinBox,QMessageBox
+    QLabel, QFileDialog, QLineEdit,QMessageBox
 )
-from . import SpecialFeeWorker
-from . import OperationWorker
+from . import OperationWorker,SpecialFeeWorker,ElecWorker,DouyinWorker
+from meituan            import MeituanWorker
+from xlutils import Wshandler
+
+
+
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
+
+#点击开始，根据UI层面的参数，调用各个模块的接口，完成业务逻辑
 
 class MyApp(QWidget):
     # 缺省参数常量
@@ -57,23 +39,71 @@ class MyApp(QWidget):
     mt =0 
     mt_len = 0
     mt_good_num = 0
-    machian_sum = 76
+
     
     working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    def __init__(self):
+        super().__init__()
+        self.setWindowTitle("数呆熊报表自动化工具")
+        self.setGeometry(100, 100, 400, 180)
+        self.last_dir = os.path.expanduser("~")  # 默认初始目录为用户主目录
+        self.selected_file = "~/Documents/日报表模板.xlsx"  # 用户选择的输入文件路径
+        self.output_dir = self.last_dir  # 默认输出目录同上次目录
+        self.save_name = "a.xlsx"
+        self.output_file = os.path.join(self.output_dir,self.save_name) # 用户选择的保存文件路径
+        print(self.output_file)
+        self.mt_cookie = ""
+        self.dy_cookie = ""
+        yesterday = datetime.today() - timedelta(days=1)
+        self.working_date = datetime.combine(yesterday, datetime.min.time())
+        self.results = {}
+        self.workers = []
+        self.completed_count = 0
+        self.electric_meter_value = 0
+        self.machine_count = 76
+        self.load_config()
+        self.init_ui()
+        self.machian_sum = 76
 
+    def handle_finished(self, name, data):
+        self.results[name] = data   # 按 name 存储每个任务的数据
+        self.results['machine_count'] = self.machian_sum
+        self.completed_count += 1
+        print(f"任务 {name} 完成，当前完成数: {self.completed_count}/{len(self.workers)}")
+        if self.completed_count == len(self.workers):
+            self.all_done()
+    
+    def all_done(self):
+        self.completed_count = 0
+        a = json.dumps(self.results, indent=4, ensure_ascii=False)
+        print(f"所有任务完成，结果: {a}")
+        
+        genws = Wshandler(self.working_date, self.selected_file , self.output_file, self.results)
+        genws.run()
+        self.results = {}
+        QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
+
+    def start_douyin(self):
+        self.douyin_worker = DouyinWorker("douyin",self.working_datetime)
+        self.douyin_worker.finished.connect(self.handle_finished)
+        self.douyin_worker.error.connect(self.on_douyin_error)
+        self.douyin_worker.start()  
+        self.workers.append(self.douyin_worker.name)    
+
+    def on_douyin_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("抖音数据错误")
+        box.setText(msg)
+        box.exec()
+                                                       
     def start_meituan_fetch(self):  
-        self.worker = MeituanWorker(self.working_datetime, parent=self)
-        self.worker.finished.connect(self.on_meituan_finished)
+        self.worker = MeituanWorker("meituan",self.working_datetime, parent=self)
+        self.worker.finished.connect(self.handle_finished)
         self.worker.error.connect(self.on_meituan_error)
         self.worker.start()
+        self.workers.append(self.worker.name)
 
-    def on_meituan_finished(self, total: float, count: int, good_num: int):
-        # 更新界面显示
-        self.mt = total
-        self.mt_len = count
-        self.mt_good_num = good_num
-        print(f"美团总金额: {self.mt}, 订单数: {self.mt_len}, 好评数: {self.mt_good_num}")
-        pass
 
     def on_meituan_error(self, msg: str):
         # 弹窗提示
@@ -83,126 +113,44 @@ class MyApp(QWidget):
         box.exec()
 
     def get_special_data(self):
-        self.special_worker = SpecialFeeWorker(self.working_datetime)
-        self.special_worker.finished.connect(self.on_special_finished)
+        self.special_worker = SpecialFeeWorker('specialfee',self.working_datetime)
+        self.special_worker.finished.connect(self.handle_finished)
         self.special_worker.error.connect(self.on_special_error)
         self.special_worker.start()
-        # 阻塞等待结果
+        self.workers.append(self.special_worker.name)
+        # self.special_worker.wait()
 
-        self.special_worker.wait()
 
-    def on_special_finished(self, result: tuple):
-        special_list, special_sum = result
-        self.DEFAULT_SPECIAL_LIST = special_list
-        self.DEFAULT_SPECIAL_SUM = special_sum
-        print(f"特免数据获取成功: {special_list}, 总额: {special_sum}")
-        pass
     def on_special_error(self, msg: str):
         # 弹窗提示
         box = QMessageBox(self)
         box.setWindowTitle("特免数据错误")
         box.setText(msg)
         box.exec()
+
+    def start_elec_fetch(self):
+        self.elec_worker = ElecWorker('elecworker',self.working_datetime)
+        self.elec_worker.finished.connect(self.handle_finished)
+        self.elec_worker.error.connect(self.on_elec_error)
+        self.elec_worker.start()
+        self.workers.append(self.elec_worker.name)
+
+    def on_elec_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("电表数据错误")
+        box.setText(msg)
+        box.exec()
+        
     
     def run_report(self):
-        yesterday = datetime.today() - timedelta(days=1)
-        working_datetime = datetime.combine(yesterday, datetime.min.time())
-        working_date_str = yesterday.strftime('%Y-%m-%d')
 
         # 获取美团、抖音、运营等数据
         self.start_meituan_fetch()  # 启动美团数据获取线程
-        self.get_op_data()        # 启动运营数据获取线程
-        self.get_special_data()  # 获取特免数据
-
-        try:
-            print(f"获取特免数据")
-            specialFee_list, special_sum = specialFee.get_specialFee(working_datetime)
-        except Exception:
-            specialFee_list, special_sum = self.DEFAULT_SPECIAL_LIST, self.DEFAULT_SPECIAL_SUM
-        try:
-            elec_usage = electron.get_elecUsage(working_datetime)
-        except Exception:
-            elec_usage = self.DEFAULT_ELEC_USAGE
-
-        # 初始化表格
-        try:
-            print(f"使用的模板文件是: {self.selected_file}")
-            source_file = self.selected_file if self.selected_file is not None else ""
-            wb = xlutils.init_sheet(working_datetime, source_file=source_file)
-            ws = wb.active
-        except Exception:
-            print("表格初始化失败，使用缺省值")
-            ws = self.DEFAULT_WS
-            wb = None
-
-        # 业务逻辑
-        if ws and wb is not None:
-            missing_dates = xlutils.find_missing_dates(ws, working_datetime)
-            logger.info(f'缺失数据的日期有: {missing_dates}')
-            data_pure = xlutils.load_data(
-                elec_usage, self.mt, float(dy), english, {
-                    "网费充值": "amountFee",
-                    "提现本金": "withdrawPrincipal",
-                    "找零": "checkoutDeposit",
-                    "零售": "retail",
-                    "水吧": "waterBar",
-                    "代购": "agent",
-                    "退款": "totalRefundFee",
-                    "报销": None,
-                    "在线支付": "onlineIn",
-                    "奖励金": "awardFee",
-                    "卡券": "cardVolumeFee",
-                    "特免": "specialFree",
-                    "网费消耗": "totalConsumeNetworkFee",
-                    "上机人次": "onlineTimes",
-                    "上机时长": "duration",
-                    "点单率": "orderRate",
-                    "新会员": "newMember"
-                }
-            )
-            if data_pure['特免'] != special_sum:
-                logger.warning(f"特免金额不匹配，请检查!!运营数据中是{data_pure['特免']},订单列表中计算出来是{special_sum}")
-            else:
-                logger.info(f"特免金额匹配，pass.")
-
-            xlutils.insert_data(ws, data_pure, working_datetime, machian_sum=self.machine_count)
-            xlutils.special_mark(ws=ws, special_data=specialFee_list, start_col='H', end_col='K')
-            mt_good_num = self.mt_good_num
-            dy_good_num = get_dygood_rate(working_datetime)
-            xlutils.ota_comment(ws, self.mt_len, dy_len, mt_good_num, dy_good_num, 'H')
-            xlutils.handle_headers(ws)
-            # 保存路径由用户选择
-            save_path = self.output_file
-            if not save_path:
-                # 如果未选择，自动生成一个默认路径
-                default_name = "日报表.xlsx"
-                if self.selected_file:
-                    default_name = os.path.splitext(os.path.basename(self.selected_file))[0] + "_日报表.xlsx"
-                save_path = os.path.join(self.last_dir, default_name)
-                self.output_file = save_path
-            save_dir = os.path.dirname(save_path)
-            os.makedirs(save_dir, exist_ok=True)
-            xlutils.save(save_path, wb, source_file=self.selected_file or "", dir_str=save_dir)
-            print(f"报表已保存: {save_path}")
-        else:
-            print("表格初始化失败，无法生成报表。")
-
-    def __init__(self):
-        super().__init__()
-        self.setWindowTitle("数呆熊报表自动化工具")
-        self.setGeometry(100, 100, 400, 180)
-        self.last_dir = os.path.expanduser("~")  # 默认初始目录为用户主目录
-        self.selected_file = None
-        self.output_dir = self.last_dir  # 默认输出目录同上次目录
-        self.save_name = "a.xlsx"
-        self.output_file = os.path.join(self.output_dir,self.save_name) # 用户选择的保存文件路径
-        self.mt_cookie = ""
-        self.dy_cookie = ""
-        
-        self.electric_meter_value = 0
-        self.machine_count = 76
-        self.load_config()
-        self.init_ui()
+        self.get_op_data()          # 启动运营数据获取线程
+        self.get_special_data()     # 获取特免数据
+        self.start_douyin()         # 获取抖音数据
+        self.start_elec_fetch()      # 获取电表数据
 
     def load_config(self):
         """加载配置文件（如上次保存目录、选中文件等）"""
@@ -246,6 +194,7 @@ class MyApp(QWidget):
 
     def init_ui(self):
         layout = QVBoxLayout()
+        h_layout = QHBoxLayout()
         layout.setSpacing(16)
         layout.setContentsMargins(30, 30, 30, 30)
 
@@ -293,7 +242,31 @@ class MyApp(QWidget):
         self.save_name_edit.setStyleSheet("font-size: 15px;")
         self.save_name_edit.setText(self.save_name or default_name or "输入文件名")
         self.save_name_edit.textChanged.connect(self.update_save_name)
-        layout.addWidget(self.save_name_edit)
+        # layout.addWidget(self.save_name_edit)
+        #用嵌套的h_layout显示
+        h_layout.addWidget(self.save_name_edit)
+        # 按钮
+        self.show_in_explorer_btn = QPushButton("在 Explorer 中显示")
+        self.show_in_explorer_btn.setStyleSheet("font-size: 15px;")
+        h_layout.addWidget(self.show_in_explorer_btn)
+
+        # 按钮点击事件
+        def open_in_explorer():
+            file_path = self.output_file
+            if not os.path.isabs(file_path):
+                file_path = os.path.abspath(file_path)
+            if os.path.exists(file_path):
+                if sys.platform.startswith("win"):
+                    subprocess.run(f'explorer /select,"{file_path}"')
+                elif sys.platform.startswith("darwin"):
+                    subprocess.run(["open", "-R", file_path])
+                else:
+                    subprocess.run(["xdg-open", os.path.dirname(file_path)])
+            else:
+                print("文件不存在:", file_path)
+
+        self.show_in_explorer_btn.clicked.connect(open_in_explorer)
+        layout.addLayout(h_layout)
 
         # 保存文件路径显示标签
         self.save_file_label = QLabel(self.output_file or "未选择保存文件")
@@ -311,6 +284,7 @@ class MyApp(QWidget):
     def update_save_name(self, text):
         self.save_name = self.save_name_edit.text().strip()
         self.output_file = os.path.join(self.output_dir, self.save_name)
+
         self.save_config()
         self.save_file_label.setText(self.output_file)
         if self.output_dir:
@@ -352,7 +326,7 @@ class MyApp(QWidget):
             self.save_config()
         else:
             self.file_label.setText("未选择文件")
-            self.selected_file = None
+            self.selected_file = "~/Documents/日报表模板.xlsx"
     def update_view(self):
 
         if self.selected_file:
@@ -368,10 +342,11 @@ class MyApp(QWidget):
         else:
             self.save_file_label.setText("未选择保存文件")
     def get_op_data(self):
-        self.worker = OperationWorker( self.working_datetime)
-        self.worker.finished.connect(self.on_op_finished)
+        self.worker = OperationWorker('operation', self.working_datetime)
+        self.worker.finished.connect(self.handle_finished)
         self.worker.error.connect(self.on_op_error)
         self.worker.start()
+        self.workers.append(self.worker.name)
 
     def on_op_finished(self, data: dict):
         print(f"运营数据获取成功: {data}")

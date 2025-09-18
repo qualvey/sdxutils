@@ -47,19 +47,24 @@ def parse_cookies(cookie_str):
 cookies = parse_cookies(cookies_str)
 
 class MeituanWorker(QThread):
-    finished = Signal(float, int, int)        # 返回总金额和订单数
+    finished = Signal(str,object)        # 返回总金额和订单数
     good_num = Signal(int)            # 返回好评数
     error = Signal(str)                  # 返回错误信息，需要弹窗提示
 
-    def __init__(self, date: datetime, parent: Optional[QWidget] = None):
+    def __init__(self, name:str,date: datetime, parent: Optional[QWidget] = None):
         super().__init__(parent)
         self.date = date
+        self.name = name
+        self.data = {}
 
     def run(self):
         try:
             total, count = self.get_meituan_sum(self.date)
             good_num = self.get_good_num(self.date)
-            self.finished.emit(total, count, good_num)
+            self.data['mt_total'] = total
+            self.data['mt_count'] = count
+            self.data['mt_good']  = good_num
+            self.finished.emit(self.name, self.data)
         except Exception as e:
             self.error.emit(str(e))
 
