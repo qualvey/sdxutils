@@ -16,6 +16,7 @@ import numpy as np
 
 from datetime import datetime, timezone
 import pytz
+from tools.env import proj_dir
 
 
 logger = logger.get_logger(__name__)
@@ -226,10 +227,12 @@ def main_flow():
        close_img() 
     token_json = decode_jwt_without_verification(token)
     token_json['token'] = token
+    import sys
+    # cache_file = os.path.join(os.path.dirname(sys.executable), "token.json")
 
-    with open(f'{env.proj_dir}/temp/token.json', 'w') as cache: json.dump(token_json, cache)
-
-    return token
+    cache_file = f"{proj_dir}/temp/token.json"
+    with open(cache_file, 'w') as cache:
+        json.dump(token_json, cache)
 
 def is_token_valid():
     #返回两个值，bool和token（如果有

@@ -2,12 +2,9 @@ import requests
 import json
 import datetime
 from datetime import datetime
-from openpyxl.styles    import Font
-from openpyxl.cell.text import InlineFont 
-from openpyxl.cell.rich_text import TextBlock, CellRichText
 
-from http.cookies import SimpleCookie
-from tools    import env, logger 
+
+from tools    import env
 from tools      import logger as mylogger
 from tools.iheader import headers
 from typing import Optional

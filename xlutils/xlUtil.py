@@ -69,7 +69,7 @@ class Wshandler:
         print(targetfile)
          
         try:
-            self.special_data = data["specialfee"][0]
+            self.special_data = data["specialfee"]['detail']
         except (KeyError, IndexError):
             # KeyError = 根本没有 specialfee
             # IndexError = specialfee 是空 list
@@ -157,17 +157,18 @@ class Wshandler:
         titlecell = ws.cell(row=37, column=start_col_index)
         titlecell.value = "特免明细:"
         titlecell.alignment = left_alignment
-        for index, item in enumerate(special_data):
+
+        for index, (key,value) in enumerate(special_data):
             row = start_row+1 + index
             if row >= end_row:
                 break
-            if '：' in item:
-                reason, value = item.split('：', 1)
-            else:
-                reason, value = item, ''
+            # if '：' in item:
+            #     reason, value = item.split('：', 1)
+            # else:
+            #     reason, value = item, ''
 
             text_cell = ws.cell(row=row, column=start_col_index)
-            text_cell.value = item
+            text_cell.value = key+value
             text_cell.alignment = left_alignment
 
             yuan_cell = ws.cell(row=row, column=end_col_index)
@@ -401,7 +402,7 @@ class Wshandler:
         backup_file = f"{source_file}.old"
         try:
             if os.path.exists(source_file):
-                shutil.move(source_file, backup_file)
+                shutil.copyfile(source_file, backup_file)
                 logger.info(f"已备份原始文件到 {backup_file}")
             else:
                 logger.warning(f"源文件 {source_file} 不存在，跳过备份")

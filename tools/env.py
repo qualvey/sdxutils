@@ -73,9 +73,15 @@ source_file = f"{proj_dir}/et/2025年日报表.xlsx"
 elecUsage_file = f"{proj_dir}/et/2025年张家山店3月电表.xlsx"
 
 config_file = f"{proj_dir}/config.json"
+import sys
+
+# config_file = os.path.join(os.path.dirname(sys.executable), "config.json")
+
+
 configjson  = {}
 
 with open(config_file, 'r',encoding="UTF-8") as config:
+    print(config)
     configjson = json.loads(config.read())
 
 

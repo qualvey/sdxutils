@@ -15,11 +15,15 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QFileDialog, QLineEdit,QMessageBox
 )
-from . import OperationWorker,SpecialFeeWorker,ElecWorker,DouyinWorker
+#这种导入方式在pyinstall打包后会报错
+# from . import OperationWorker,SpecialFeeWorker,ElecWorker,DouyinWorker
+from GUI.operation_worker import OperationWorker
+from GUI.specialFee_worker import SpecialFeeWorker
+from GUI.elec_worker import ElecWorker
+from GUI.douyinWorker import DouyinWorker
+
 from meituan            import MeituanWorker
 from xlutils import Wshandler
-
-
 
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
 
@@ -28,19 +32,13 @@ CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
 class MyApp(QWidget):
     # 缺省参数常量
     DEFAULT_MT = 0
-    DEFAULT_MT_LEN = 0
+
     DEFAULT_DY = 0
     DEFAULT_DY_LEN = 0
     DEFAULT_ENGLISH = {}
-    DEFAULT_SPECIAL_SUM = 0
-    DEFAULT_SPECIAL_LIST = []
-    DEFAULT_ELEC_USAGE = 0.0
-    DEFAULT_WS = None
     mt =0 
-    mt_len = 0
     mt_good_num = 0
 
-    
     working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     def __init__(self):
         super().__init__()
@@ -89,28 +87,13 @@ class MyApp(QWidget):
         self.douyin_worker.error.connect(self.on_douyin_error)
         self.douyin_worker.start()  
         self.workers.append(self.douyin_worker.name)    
-
-    def on_douyin_error(self, msg: str):
-        # 弹窗提示
-        box = QMessageBox(self)
-        box.setWindowTitle("抖音数据错误")
-        box.setText(msg)
-        box.exec()
-                                                       
+                                                 
     def start_meituan_fetch(self):  
         self.worker = MeituanWorker("meituan",self.working_datetime, parent=self)
         self.worker.finished.connect(self.handle_finished)
-        self.worker.error.connect(self.on_meituan_error)
+        self.worker.error.connect(self.on_douyin_error)
         self.worker.start()
         self.workers.append(self.worker.name)
-
-
-    def on_meituan_error(self, msg: str):
-        # 弹窗提示
-        box = QMessageBox(self)
-        box.setWindowTitle("美团数据错误")
-        box.setText(msg)
-        box.exec()
 
     def get_special_data(self):
         self.special_worker = SpecialFeeWorker('specialfee',self.working_datetime)
@@ -120,29 +103,20 @@ class MyApp(QWidget):
         self.workers.append(self.special_worker.name)
         # self.special_worker.wait()
 
-
-    def on_special_error(self, msg: str):
-        # 弹窗提示
-        box = QMessageBox(self)
-        box.setWindowTitle("特免数据错误")
-        box.setText(msg)
-        box.exec()
-
     def start_elec_fetch(self):
         self.elec_worker = ElecWorker('elecworker',self.working_datetime)
         self.elec_worker.finished.connect(self.handle_finished)
         self.elec_worker.error.connect(self.on_elec_error)
         self.elec_worker.start()
         self.workers.append(self.elec_worker.name)
+    def get_op_data(self):
+        self.worker = OperationWorker('operation', self.working_datetime)
+        self.worker.finished.connect(self.handle_finished)
+        self.worker.error.connect(self.on_op_error)
+        self.worker.start()
+        self.workers.append(self.worker.name)
 
-    def on_elec_error(self, msg: str):
-        # 弹窗提示
-        box = QMessageBox(self)
-        box.setWindowTitle("电表数据错误")
-        box.setText(msg)
-        box.exec()
-        
-    
+
     def run_report(self):
 
         # 获取美团、抖音、运营等数据
@@ -171,7 +145,6 @@ class MyApp(QWidget):
             logger.info("没有配置文件")
             # 没有配置文件，使用默认值
             pass
-
     def save_config(self):
         """保存配置文件"""
         config = {
@@ -341,17 +314,7 @@ class MyApp(QWidget):
             self.save_file_label.setText(self.output_file)
         else:
             self.save_file_label.setText("未选择保存文件")
-    def get_op_data(self):
-        self.worker = OperationWorker('operation', self.working_datetime)
-        self.worker.finished.connect(self.handle_finished)
-        self.worker.error.connect(self.on_op_error)
-        self.worker.start()
-        self.workers.append(self.worker.name)
 
-    def on_op_finished(self, data: dict):
-        print(f"运营数据获取成功: {data}")
-        self.DEFAULT_ENGLISH = data
-        pass
 
     def on_op_error(self, msg: str):
         # 弹窗提示
@@ -359,10 +322,26 @@ class MyApp(QWidget):
         box.setWindowTitle("运营数据错误")
         box.setText(msg)
         box.exec()
-    def start_process(self):
-        # 只调用run_report，所有业务逻辑和异常在run_report中处理
-        self.run_report()
 
+    def on_douyin_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("抖音数据错误")
+        box.setText(msg)
+        box.exec()
+        
+    def on_special_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("特免数据错误")
+        box.setText(msg)
+        box.exec()
+    def on_elec_error(self, msg: str):
+        # 弹窗提示
+        box = QMessageBox(self)
+        box.setWindowTitle("电表数据错误")
+        box.setText(msg)
+        box.exec()
 
 # 启动主程序入口
 if __name__ == "__main__":

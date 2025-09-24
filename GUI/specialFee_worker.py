@@ -17,6 +17,6 @@ class SpecialFeeWorker(QThread):
             sf_data = sfservice.fetch_specialFee()
             resolved_data = sfservice.resolve_data(sf_data)
             total_fee = sfservice.get_specialFee(resolved_data)
-            self.finished.emit(self.name,(resolved_data, total_fee))
+            self.finished.emit(self.name,{'detail':resolved_data, 'sum':total_fee})
         except Exception as e:
             self.error.emit(str(e))
