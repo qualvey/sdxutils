@@ -7,7 +7,7 @@ logger = mylogger.get_logger(__name__)
 
 
 class ElecWorker(QThread):
-    finished = Signal(str, float)  
+    finished = Signal(str, int )  
     error = Signal(str)      # 返回错误信息，需要弹窗提示
     status = {} # 用于存储状态信息
 
@@ -22,7 +22,9 @@ class ElecWorker(QThread):
             logger.info("ElecWorker run")
             elecservice = ElecDataService(self.date)
             el_data:float = elecservice.get_elecUsage()
-            
-            self.finished.emit(self.name,el_data)
+
+            logger.info(f'el_data from elec_worker:{el_data}')
+            #结果四舍五入
+            self.finished.emit(self.name,round(el_data))
         except Exception as e:
             self.error.emit(str(e))

@@ -158,7 +158,7 @@ class Wshandler:
         titlecell.value = "特免明细:"
         titlecell.alignment = left_alignment
 
-        for index, (key,value) in enumerate(special_data):
+        for index, (key,value) in enumerate(special_data.items()):
             row = start_row+1 + index
             if row >= end_row:
                 break
@@ -168,7 +168,7 @@ class Wshandler:
             #     reason, value = item, ''
 
             text_cell = ws.cell(row=row, column=start_col_index)
-            text_cell.value = key+value
+            text_cell.value = key+':'+str(value)
             text_cell.alignment = left_alignment
 
             yuan_cell = ws.cell(row=row, column=end_col_index)
@@ -320,14 +320,15 @@ class Wshandler:
         "点单率"    :     "orderRate",
         "新会员"    :     "newMember"
     }
-        elec_usage = self.data.get("elec_worker",0)
+        elec_usage = self.data.get("elecworker",0)
         mt = self.data["meituan"].get("mt_total",0)
         dy = self.data["douyin"].get("dy_total",0)
         english = self.data.get("operation",{})
         main_data: dict[str, float | None] = {
             "用电量" : elec_usage ,
             "美团"   : mt   ,
-            "抖音"   : dy
+            "抖音"   : dy,
+            "口碑"   : 0.001
         }
 
         for cn_name, eng_name in cn_en_map.items():

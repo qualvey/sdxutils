@@ -80,6 +80,7 @@ class MyApp(QWidget):
         genws.run()
         self.results = {}
         QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
+        self.workers = []
 
     def start_douyin(self):
         self.douyin_worker = DouyinWorker("douyin",self.working_datetime)

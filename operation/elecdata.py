@@ -1,6 +1,6 @@
 from openpyxl import load_workbook, Workbook
 from openpyxl.utils import coordinate_to_tuple
-import os,json
+
 import tkinter as tk
 from datetime import datetime, date, timedelta
 
@@ -144,10 +144,11 @@ class ElecDataService:
         previous_day = self.date - timedelta(days=1)
         previous_day_str = previous_day.strftime('%Y-%m-%d')
         previous_day_value = self.query_sql(previous_day_str)
-        logger.info(previous_day_value)
+        logger.info(f'前一天:{previous_day_value}')
 
         if previous_day_value:
             result = ele_usage - previous_day_value
+            logger.info(f'用电量{result}')
         else:
             logger.warning(f'前一天<{previous_day}>的数据不存在,是否添加? y<int>/n')
             user_input = input(f'输入 y 紧跟电表数据，例如 y123.4，或 n 退出\n').strip().lower()
