@@ -8,6 +8,7 @@ from tools import env
 from tools.logger import get_logger
 
 import sqlite3
+from typing import Optional
 
 logger = get_logger(__name__)
 
@@ -69,7 +70,7 @@ class ElecDataService:
             print(f"插入数据时发生错误: {err}")
 
     # 定义查询日期
-    def query_sql(self,date_str:str) -> float | None:
+    def query_sql(self,date_str:str) ->  Optional[float]:
         self.cursor.execute('SELECT energy_consumed FROM daily_energy_consumption WHERE record_date = ?', (date_str,))
         rows = self.cursor.fetchall()
         for row in rows:
@@ -80,7 +81,7 @@ class ElecDataService:
 
     from openpyxl.worksheet.worksheet import Worksheet
     @staticmethod
-    def get_row_by_date(worksheet:Worksheet, date:datetime, start_cell="A1", end_cell="A35") -> int | None:
+    def get_row_by_date(worksheet:Worksheet, date:datetime, start_cell="A1", end_cell="A35") -> Optional[int]:
         date_str:str = str(date.date())
         try:
             min_row, min_col = coordinate_to_tuple(start_cell)

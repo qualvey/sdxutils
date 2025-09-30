@@ -1,4 +1,4 @@
-from tools.login import token
+from tools import login
 
 raw_header = """
 Host: hub.sdxnetcafe.com
@@ -13,9 +13,10 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 Priority: u=0
 """
-
+token = login.init()
 headers = {}
 headers['Authorization'] =token 
+
 def raw_header_to_json(raw_header):
 
     lines = raw_header.splitlines()

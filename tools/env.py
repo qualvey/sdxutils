@@ -1,11 +1,5 @@
-import os
-import json
-import platform
-import pytz
-import logging
-
-from datetime   import datetime, date
-
+import os,sys,json,platform,pytz,logging
+from datetime   import datetime
 logger = logging.getLogger(__name__)
 
 logging.basicConfig(filename='myapp.log', level=logging.INFO)
@@ -66,13 +60,21 @@ def get_timestamp(datetime_obj, end_of_day=False, unit='ms'):
         logger.error(f"错误：{e}")
         return None  # 如果日期字符串格式错误或其他异常，则返回 None
 
-home = os.environ.get('HOME') 
-proj_dir = get_directory(1)
+def get_proj_dir():
+    if getattr(sys, 'frozen', False):  
+        # 打包后的 exe 运行
+        return os.path.dirname(sys.executable)
+    else:
+        # 源代码运行
+        # return os.path.dirname(os.path.abspath(__file__))
+        return os.getcwd()
+
+proj_dir = get_proj_dir()
+config_file = os.path.join(proj_dir, "config.json")
 
 source_file = f"{proj_dir}/et/2025年日报表.xlsx"
 elecUsage_file = f"{proj_dir}/et/2025年张家山店3月电表.xlsx"
 
-config_file = f"{proj_dir}/config.json"
 import sys
 
 # config_file = os.path.join(os.path.dirname(sys.executable), "config.json")

@@ -1,23 +1,32 @@
 
-from io import StringIO
-from tools import env, logger
-from PIL import Image
-from io import BytesIO
-import xml.etree.ElementTree as ET
-import os
+from tools import logger
 
-import re
-import requests
-import time
-import base64
-import json
-import cv2
+import xml.etree.ElementTree as ET
+
+
+import re,requests,sys,time,base64,json,cv2,pytz,os
+
 import numpy as np 
 
 from datetime import datetime, timezone
-import pytz
-from tools.env import proj_dir
 
+
+#配置存放位置，pyinstaller打包和源码运行时不一样
+
+# 配置存放位置，兼容源码运行和 PyInstaller exe
+def get_proj_dir():
+    if getattr(sys, 'frozen', False):  
+        # 打包后的 exe 运行
+        return os.path.dirname(sys.executable)
+    else:
+        # 源代码运行
+        # return os.path.dirname(os.path.abspath(__file__))
+        return os.getcwd()
+
+proj_dir = get_proj_dir()
+temp_dir = os.path.join(proj_dir, "temp")
+cache_file = os.path.join(temp_dir, "token.json")
+os.makedirs(temp_dir, exist_ok=True)  # 确保 temp 目录存在
 
 logger = logger.get_logger(__name__)
 WINDOW_NAME = "QR Code Viewer"
@@ -58,7 +67,7 @@ def get_uuid():
     "Priority" : "u=0"
     }
 
-    url = f'http://{headers['Host']}{api_endpoint}'
+    url = f"http://{headers['Host']}{api_endpoint}"
 
     response = requests.get(url=url, params=params, headers=headers)
     xml_data = response.text
@@ -71,6 +80,10 @@ def get_uuid():
 def show_img(response_qrcode):
     arr = np.asarray(bytearray(response_qrcode.content), dtype=np.uint8)
     img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
+
+    if img is None:
+        logger.error("无法解码二维码图片")
+        return
 
     # 设置窗口和图像大小
     target_width, target_height = 300, 300
@@ -217,7 +230,7 @@ def return_qrcode():
     #show_img(response_qrcode)
     return response_qrcode
 
-def main_flow():
+def main_flow(cache_file:str = f'{temp_dir}/token.json'):
     uuid = get_uuid()
     response_qrcode = get_qrcode(uuid=uuid)
     show_img(response_qrcode)
@@ -227,16 +240,16 @@ def main_flow():
        close_img() 
     token_json = decode_jwt_without_verification(token)
     token_json['token'] = token
-    import sys
     # cache_file = os.path.join(os.path.dirname(sys.executable), "token.json")
 
-    cache_file = f"{proj_dir}/temp/token.json"
     with open(cache_file, 'w') as cache:
         json.dump(token_json, cache)
+    return token
 
-def is_token_valid():
+def is_token_valid(cache_file: str = f'{temp_dir}/token.json'):
+  
     #返回两个值，bool和token（如果有
-    with open(f'{env.proj_dir}/temp/token.json', 'r') as cache:
+    with open(cache_file, 'r') as cache:
         data = json.load(cache)
 
     exp_timestamp = data.get('exp')
@@ -250,19 +263,20 @@ def is_token_valid():
         if exp_datetime > current_datetime:
             return True, token
         else:
-            return False, None
+            return False, 'token已过期'
     else:
         print("未找到过期时间")
         return False, None
 
-if os.path.isfile(f'{env.proj_dir}/temp/token.json'):
-    status, token = is_token_valid()
-    if status:
-        token = token
-        logger.info("令牌未过期,不用扫码")
+def init() -> str:
+    if os.path.isfile(cache_file):
+        status, token = is_token_valid()
+        if status:
+            token = token
+            logger.info("令牌未过期,不用扫码")
+           
     else:
         token = main_flow()
-        logger.info("令牌已过期")
-else:
-    token = main_flow()
+    return token
+    
 

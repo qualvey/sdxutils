@@ -3,13 +3,11 @@
 import os,sys, json, subprocess
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from datetime               import datetime, date, timedelta 
+from datetime               import datetime,  timedelta 
 # from meituan.main       import get_meituanSum,  get_mtgood_rates
-from operation          import elecdata as electron
+
 from tools import  logger as mylogger
 logger = mylogger.get_logger(__name__)
-
-from typing import cast, Optional, Tuple
 
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
@@ -344,9 +342,13 @@ class MyApp(QWidget):
         box.setText(msg)
         box.exec()
 
+
+def main():
+    app = QApplication(sys.argv)
+    my_app = MyApp()
+    my_app.show()
+    sys.exit(app.exec())
 # 启动主程序入口
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = MyApp()
-    window.show()
-    sys.exit(app.exec())
+    main()
+

@@ -45,8 +45,11 @@ specific_headers:dict = {
         "x-tt-ls-session-id": "670c204f-500f-41dc-8123-51da77a17d0e",
 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0",
     }
+#python 3.9+
+# headers = common_headers | specific_headers
+#for Python < 3.9
+headers = {**common_headers, **specific_headers}
 
-headers = common_headers | specific_headers
 
 class DouyinRequestError(Exception):
     """抖音数据请求失败（重试已达最大次数）"""

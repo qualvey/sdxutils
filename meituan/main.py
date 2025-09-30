@@ -189,14 +189,19 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
         if not json_data:
             logger.error('美团请求返回空值，请检查 cookie 是否失效')
             chosen = input("还要继续执行吗? N/y ").strip() or "N"
-
-            match chosen.lower():
-                case "y":
-                    print("继续执行...")
-                    # 执行逻辑
-                case _:
-                    print("程序终止，请检查Cookies")
-                    sys.exit(2)
+            #compitable with python 3.10+
+            # match chosen.lower():
+            #     case "y":
+            #         print("继续执行...")
+            #         # 执行逻辑
+            #     case _:
+            #         print("程序终止，请检查Cookies")
+            #         sys.exit(2)
+            if chosen.lower() == 'y':
+                print("继续执行...")
+            else:
+                print("程序终止，请检查Cookies")
+                sys.exit(2)
 
 
         # 保存 JSON 响应
@@ -212,13 +217,18 @@ def get_meituanSum(date: datetime) -> Tuple[float, int]:
         logger.error(locals().get("response", "没有美团的返回数据"))
         chosen = input("还要继续执行吗? N/y ").strip() or "N"
 
-        match chosen.lower():
-            case "y":
-                print("继续执行...")
-                # 执行逻辑
-            case _:
-                print("程序终止，请检查Cookies")
-                sys.exit(2)
+        # match chosen.lower():
+        #     case "y":
+        #         print("继续执行...")
+        #         # 执行逻辑
+        #     case _:
+        #         print("程序终止，请检查Cookies")
+        #         sys.exit(2)
+        if chosen.lower() == 'y':
+            print("继续执行...")
+        else:
+            print("程序终止，请检查Cookies")
+            sys.exit(2)
 
     # 处理返回数据
     if json_data:
