@@ -1,8 +1,7 @@
 import requests
 import json
 from datetime import datetime, timedelta
-import argparse
-
+from urllib.parse import urlparse, parse_qs
 import time
 from tools import env
 from tools.logger import get_logger
@@ -10,7 +9,8 @@ from typing  import Optional, Tuple
 from decimal import Decimal, ROUND_HALF_UP
 
 logger = get_logger(__name__)
-
+#just paste the link here to extract parameters
+origin_url:str = "https://life.douyin.com/life/infra/v1/review/get_review_list/?life_account_ids=7548743672642127912&poi_id=6828149180763080708&tags=1,9,5,4,10,8,7,50,&sort_by=2&life_account_id=7136075595087087628&query_time_start=1759161600&query_time_end=1759247999&search_after=&cursor=0&count=10&top_rate_ids=&reply_display_by_level=1&root_life_account_id=7136075595087087628&store_type=2&source=1"
 cookie:str         = env.configjson['cookies']['dy']
 # Convert cookie string to dict if necessary
 def parse_cookie_string(cookie_str: str) -> dict:
@@ -46,16 +46,43 @@ specific_headers:dict = {
 "User-Agent": "Mozilla/5.0 (X11; Linux x86_64; rv:136.0) Gecko/20100101 Firefox/136.0",
     }
 #python 3.9+
-# headers = common_headers | specific_headers
+headers = common_headers | specific_headers
 #for Python < 3.9
-headers = {**common_headers, **specific_headers}
+# headers = {**common_headers, **specific_headers}
+def extract_params(url: str) -> dict:
+    # 解析 URL
+    parsed = urlparse(url)
+    query = parse_qs(parsed.query)
 
+    # 需要的 key
+    keys = ["root_life_account_id", "life_account_ids", "life_account_id", "poi_id"]
+
+    # 提取并返回
+    result = {}
+    for key in keys:
+        if key in query:
+            # parse_qs 返回的是 list，所以取第一个
+            result[key] = query[key][0]
+        else:
+            result[key] = None
+    return result
+
+key_params = extract_params(origin_url)
 
 class DouyinRequestError(Exception):
     """抖音数据请求失败（重试已达最大次数）"""
     pass
 
 class DouyinService:
+    #needed parameters
+    # https://life.douyin.com/life/infra/v1/review/get_review_list/?life_account_ids=7548743672642127912&poi_id=6828149180763080708&tags=1,9,5,4,10,8,7,50,&sort_by=2&life_account_id=7136075595087087628&query_time_start=1759161600&query_time_end=1759247999&search_after=&cursor=0&count=10&top_rate_ids=&reply_display_by_level=1&root_life_account_id=7136075595087087628&store_type=2&source=1
+
+        # root_life_account_id
+        # life_account_ids
+        # life_account_id
+        # root_life_account_id
+        # poi_id
+    # 
     def __init__(self,date:datetime) -> None:
         self.date = date
         self.dy_rawdata = {}
@@ -79,7 +106,8 @@ class DouyinService:
         params  = {
             'page_index': 1,
             'page_size' : 100, 
-            'root_life_account_id' : '7143570945559037956'
+            'root_life_account_id' : key_params['root_life_account_id'],
+            
         }
         logger.info(f'抖音日期:{self.date}')
 
@@ -184,10 +212,11 @@ class DouyinService:
         
     #几个id可能会改变 
         query  = {
-            "life_account_ids": "7494586712149051455",
-            "life_account_id": "7143570945559037956",
-            "root_life_account_id": "7143570945559037956",
-            "poi_id": "6828149180763080708",
+            # "life_account_ids": "7548743672642127912",
+            # "life_account_id": "7136075595087087628",
+            # "root_life_account_id": "7136075595087087628",
+            # "poi_id": "6828149180763080708",
+            **key_params,
             "tags": "1,9,5,4,10,8,7,50,",
             "sort_by": "2",
             "query_time_start": begin_timestamp,
@@ -208,6 +237,7 @@ class DouyinService:
             )
 
         data = response.json()
+        logger.debug(f"get_good_rate返回json:\n{json.dumps(data, indent = 4, ensure_ascii=False)}")
         response_list = data.get('data').get('reviews')
         logger.debug('get_good_rate:\n')
         logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))

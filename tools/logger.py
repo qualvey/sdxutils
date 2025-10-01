@@ -20,7 +20,7 @@ class ParentDirFilter(logging.Filter):
         return True
 
 LOG_LEVEL = getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO)
-#LOG_FMT = "%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(message)s"
+#LOG_FMT = "%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(messages"
 LOG_FMT = " %(message)s  - %(asctime)s  - %(levelname)s - %(parent_file)s:%(lineno)d "
 log_path = f'{env.proj_dir}/log/debug.log'
 

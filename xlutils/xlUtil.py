@@ -66,7 +66,9 @@ class Wshandler:
         self.data = data
         self.final_data = {}
         self.targetfile = targetfile
-        print(targetfile)
+        logger.info(f'working_date{self.working_date}')
+        logger.info(f'source_file{self.source_file}')
+        logger.info(f'targetfile{self.targetfile}')
          
         try:
             self.special_data = data["specialfee"]['detail']

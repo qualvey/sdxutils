@@ -13,6 +13,9 @@ Sec-Fetch-Mode: cors
 Sec-Fetch-Site: same-origin
 Priority: u=0
 """
+from tools import logger as mylogger
+logger = mylogger.get_logger(__name__)
+logger.info('开始获取token')
 token = login.init()
 headers = {}
 headers['Authorization'] =token 

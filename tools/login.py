@@ -1,18 +1,13 @@
 
-from tools import logger
-
+from tools import logger as mylogger
+logger = mylogger.get_logger(__name__)
 import xml.etree.ElementTree as ET
 
-
 import re,requests,sys,time,base64,json,cv2,pytz,os
-
 import numpy as np 
-
 from datetime import datetime, timezone
 
-
 #配置存放位置，pyinstaller打包和源码运行时不一样
-
 # 配置存放位置，兼容源码运行和 PyInstaller exe
 def get_proj_dir():
     if getattr(sys, 'frozen', False):  
@@ -23,14 +18,12 @@ def get_proj_dir():
         # return os.path.dirname(os.path.abspath(__file__))
         return os.getcwd()
 
+
 proj_dir = get_proj_dir()
 temp_dir = os.path.join(proj_dir, "temp")
 cache_file = os.path.join(temp_dir, "token.json")
 os.makedirs(temp_dir, exist_ok=True)  # 确保 temp 目录存在
-
-logger = logger.get_logger(__name__)
 WINDOW_NAME = "QR Code Viewer"
-
 def get_uuid():
 
     api_endpoint = "/connect/qrconnect"
@@ -231,6 +224,7 @@ def return_qrcode():
     return response_qrcode
 
 def main_flow(cache_file:str = f'{temp_dir}/token.json'):
+    logger.info('开始扫码登录')
     uuid = get_uuid()
     response_qrcode = get_qrcode(uuid=uuid)
     show_img(response_qrcode)
@@ -246,7 +240,7 @@ def main_flow(cache_file:str = f'{temp_dir}/token.json'):
         json.dump(token_json, cache)
     return token
 
-def is_token_valid(cache_file: str = f'{temp_dir}/token.json'):
+def token_check(cache_file: str = f'{temp_dir}/token.json'):
   
     #返回两个值，bool和token（如果有
     with open(cache_file, 'r') as cache:
@@ -265,18 +259,22 @@ def is_token_valid(cache_file: str = f'{temp_dir}/token.json'):
         else:
             return False, 'token已过期'
     else:
-        print("未找到过期时间")
-        return False, None
+        logger.error('未找到过期时间')
+        return False, '未找到过期时间'
 
 def init() -> str:
+    logger.info('token.init 开始')
     if os.path.isfile(cache_file):
-        status, token = is_token_valid()
+        status, token = token_check()
+        logger.info(f'token状态: {status}')
         if status:
-            token = token
             logger.info("令牌未过期,不用扫码")
-           
+            token = token
+        else:
+            logger.info('token过期，开始main_flow')
+            token = main_flow()
     else:
+        logger.info('token文件不存在，开始main_flow')
+
         token = main_flow()
     return token
-    
-

@@ -20,7 +20,7 @@ from GUI.specialFee_worker import SpecialFeeWorker
 from GUI.elec_worker import ElecWorker
 from GUI.douyinWorker import DouyinWorker
 
-from meituan            import MeituanWorker
+from GUI.meituanWorker import MeituanWorker
 from xlutils import Wshandler
 
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
@@ -28,15 +28,6 @@ CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
 #点击开始，根据UI层面的参数，调用各个模块的接口，完成业务逻辑
 
 class MyApp(QWidget):
-    # 缺省参数常量
-    DEFAULT_MT = 0
-
-    DEFAULT_DY = 0
-    DEFAULT_DY_LEN = 0
-    DEFAULT_ENGLISH = {}
-    mt =0 
-    mt_good_num = 0
-
     working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
     def __init__(self):
         super().__init__()
@@ -47,9 +38,7 @@ class MyApp(QWidget):
         self.output_dir = self.last_dir  # 默认输出目录同上次目录
         self.save_name = "a.xlsx"
         self.output_file = os.path.join(self.output_dir,self.save_name) # 用户选择的保存文件路径
-        print(self.output_file)
-        self.mt_cookie = ""
-        self.dy_cookie = ""
+
         yesterday = datetime.today() - timedelta(days=1)
         self.working_date = datetime.combine(yesterday, datetime.min.time())
         self.results = {}
@@ -78,28 +67,28 @@ class MyApp(QWidget):
         genws.run()
         self.results = {}
         QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
-        self.workers = []
+        self.workers = []   
 
     def start_douyin(self):
         self.douyin_worker = DouyinWorker("douyin",self.working_datetime)
         self.douyin_worker.finished.connect(self.handle_finished)
         self.douyin_worker.error.connect(self.on_douyin_error)
         self.douyin_worker.start()  
-        self.workers.append(self.douyin_worker.name)    
+        self.workers.append(self.douyin_worker)    
                                                  
     def start_meituan_fetch(self):  
-        self.worker = MeituanWorker("meituan",self.working_datetime, parent=self)
-        self.worker.finished.connect(self.handle_finished)
-        self.worker.error.connect(self.on_douyin_error)
-        self.worker.start()
-        self.workers.append(self.worker.name)
+        self.meituan_worker = MeituanWorker("meituan",self.working_datetime)
+        self.meituan_worker.finished.connect(self.handle_finished)
+        self.meituan_worker.error.connect(self.on_douyin_error)
+        self.meituan_worker.start()
+        self.workers.append(self.meituan_worker)
 
     def get_special_data(self):
         self.special_worker = SpecialFeeWorker('specialfee',self.working_datetime)
         self.special_worker.finished.connect(self.handle_finished)
         self.special_worker.error.connect(self.on_special_error)
         self.special_worker.start()
-        self.workers.append(self.special_worker.name)
+        self.workers.append(self.special_worker)
         # self.special_worker.wait()
 
     def start_elec_fetch(self):
@@ -107,13 +96,13 @@ class MyApp(QWidget):
         self.elec_worker.finished.connect(self.handle_finished)
         self.elec_worker.error.connect(self.on_elec_error)
         self.elec_worker.start()
-        self.workers.append(self.elec_worker.name)
+        self.workers.append(self.elec_worker)
     def get_op_data(self):
         self.worker = OperationWorker('operation', self.working_datetime)
         self.worker.finished.connect(self.handle_finished)
         self.worker.error.connect(self.on_op_error)
         self.worker.start()
-        self.workers.append(self.worker.name)
+        self.workers.append(self.worker)
 
 
     def run_report(self):
@@ -135,7 +124,8 @@ class MyApp(QWidget):
                 self.output_dir = config.get("output_dir", self.output_dir)
                 self.save_name = config.get("save_name", "日报表.xlsx")   
                 self.selected_file = config.get("selected_file", self.selected_file)
-                self.output_file = os.path.join(self.output_dir, self.save_name)    
+                self.output_file = os.path.join(self.output_dir, self.save_name) 
+                logger.info(f'outputfile{self.output_file}')   
                 self.electric_meter_value = config.get("electric_meter_value", self.electric_meter_value)
                 self.machine_count = config.get("machine_count", self.machine_count)
             except Exception as e:
@@ -153,10 +143,10 @@ class MyApp(QWidget):
             "machine_count": self.machine_count,
             "output_dir":self.output_dir,
             "save_name": self.save_name or None,
-            "cookies":{
-                "mt": self.mt_cookie,
-                "dy": self.dy_cookie
-            }
+            # "cookies":{
+            #     "mt": self.mt_cookie,
+            #     "dy": self.dy_cookie
+            # }
         }
         try:
             with open(CONFIG_PATH, "w", encoding="utf-8") as f:
@@ -341,7 +331,12 @@ class MyApp(QWidget):
         box.setWindowTitle("电表数据错误")
         box.setText(msg)
         box.exec()
-
+    def closeEvent(self, event):
+        for worker in self.workers:
+            if worker.isRunning():
+                worker.quit()
+                worker.wait()
+        event.accept()
 
 def main():
     app = QApplication(sys.argv)
