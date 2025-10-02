@@ -118,7 +118,7 @@ class MeituanService():
             except ValueError:
                 logger.warning(f"无法解析价格: {price_str}")
         sale_price_sum = round(sale_price_sum, 2)
-        self.data['mt_total'] = sale_price_sum
+        self.data['meituan_total'] = sale_price_sum
         self.data['mt_count'] = mt_len
         return sale_price_sum, mt_len
     #获取好评数

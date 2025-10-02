@@ -194,7 +194,7 @@ class DouyinService:
         dy_total = total.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP)
         if not isinstance(self.data, dict):
             self.data = {}
-        self.data['dy_total'] = float(dy_total)
+        self.data['douyin_total'] = float(dy_total)
         self.data['dy_count'] = dy_len
         return dy_total , dy_len
 

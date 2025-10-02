@@ -1,12 +1,15 @@
 # gui_main.py
 
-import os,sys, json, subprocess
+import os,sys, json, subprocess,threading
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 
 from datetime               import datetime,  timedelta 
 # from meituan.main       import get_meituanSum,  get_mtgood_rates
 
 from tools import  logger as mylogger
+from operation import OTAUpdater
 logger = mylogger.get_logger(__name__)
 
 from PySide6.QtWidgets import (
@@ -60,9 +63,11 @@ class MyApp(QWidget):
     
     def all_done(self):
         self.completed_count = 0
-        a = json.dumps(self.results, indent=4, ensure_ascii=False)
-        print(f"所有任务完成，结果: {a}")
-        
+        infomation = json.dumps(self.results, indent=4, ensure_ascii=False)
+        logger.info(f"所有任务完成，结果: {infomation}")
+        otaworker = OTAUpdater(self.results, self.working_date)
+        thread_ota  = threading.Thread(target=otaworker.run, daemon=True)
+        thread_ota.start()
         genws = Wshandler(self.working_date, self.selected_file , self.output_file, self.results)
         genws.run()
         self.results = {}
