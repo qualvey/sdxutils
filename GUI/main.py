@@ -4,7 +4,6 @@ import os,sys, json, subprocess,threading
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-
 from datetime               import datetime,  timedelta 
 # from meituan.main       import get_meituanSum,  get_mtgood_rates
 
@@ -16,6 +15,9 @@ from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QFileDialog, QLineEdit,QMessageBox
 )
+from PySide6.QtWidgets import QCheckBox
+from PySide6.QtWidgets import QDateEdit
+from PySide6.QtCore import QDate
 #这种导入方式在pyinstall打包后会报错
 # from . import OperationWorker,SpecialFeeWorker,ElecWorker,DouyinWorker
 from GUI.operation_worker import OperationWorker
@@ -41,21 +43,23 @@ class MyApp(QWidget):
         self.output_dir = self.last_dir  # 默认输出目录同上次目录
         self.save_name = "a.xlsx"
         self.output_file = os.path.join(self.output_dir,self.save_name) # 用户选择的保存文件路径
-
-        yesterday = datetime.today() - timedelta(days=1)
-        self.working_date = datetime.combine(yesterday, datetime.min.time())
+        #这里还是反斜杠
+        # 默认工作日期为昨天（午夜）
+        self.working_date = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+        # keep a QDate-based datetime used by workers
+        self.working_datetime = self.working_date
         self.results = {}
         self.workers = []
         self.completed_count = 0
         self.electric_meter_value = 0
-        self.machine_count = 76
+        self.machine_sum = 76
+
         self.load_config()
         self.init_ui()
-        self.machian_sum = 76
 
     def handle_finished(self, name, data):
         self.results[name] = data   # 按 name 存储每个任务的数据
-        self.results['machine_count'] = self.machian_sum
+        self.results['machine_sum'] = self.machine_sum
         self.completed_count += 1
         print(f"任务 {name} 完成，当前完成数: {self.completed_count}/{len(self.workers)}")
         if self.completed_count == len(self.workers):
@@ -73,6 +77,15 @@ class MyApp(QWidget):
         self.results = {}
         QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
         self.workers = []   
+        # 如果是批量模式，继续下一个日期
+        if getattr(self, 'batch_mode', False):
+            # pop next date from pending list
+            if hasattr(self, 'batch_dates') and self.batch_dates:
+                next_date = self.batch_dates.pop(0)
+                self.set_date_and_run(next_date)
+            else:
+                # 批量完成，清理
+                self.batch_mode = False
 
     def start_douyin(self):
         self.douyin_worker = DouyinWorker("douyin",self.working_datetime)
@@ -109,15 +122,57 @@ class MyApp(QWidget):
         self.worker.start()
         self.workers.append(self.worker)
 
-
     def run_report(self):
 
-        # 获取美团、抖音、运营等数据
+        # 如果是批量模式，先构建日期列表并开始第一个日期
+        if getattr(self, 'batch_mode', False):
+            # build date list from start_date to end_date inclusive
+            start_q = self.start_date_edit.date()
+            end_q = self.end_date_edit.date()
+            start_dt = datetime(start_q.year(), start_q.month(), start_q.day())
+            end_dt = datetime(end_q.year(), end_q.month(), end_q.day())
+            if start_dt > end_dt:
+                QMessageBox.warning(self, "日期错误", "开始日期必须早于或等于结束日期")
+                return
+            days = (end_dt - start_dt).days + 1
+            self.batch_dates = [start_dt + timedelta(days=i) for i in range(days)]
+            # mark batch_mode and start first
+            self.batch_mode = True
+            first = self.batch_dates.pop(0)
+            self.set_date_and_run(first)
+            return
+
+        # 单日模式：获取美团、抖音、运营等数据
         self.start_meituan_fetch()  # 启动美团数据获取线程
         self.get_op_data()          # 启动运营数据获取线程
         self.get_special_data()     # 获取特免数据
         self.start_douyin()         # 获取抖音数据
         self.start_elec_fetch()      # 获取电表数据
+
+    def set_date_and_run(self, date_dt: datetime):
+        """Set working_date/workers and adjust output filename, then start workers for this date."""
+        # set working date (datetime at midnight)
+        self.working_date = datetime.combine(date_dt.date(), datetime.min.time())
+        self.working_datetime = self.working_date
+        # adjust output file name to include date suffix before extension
+        base, ext = os.path.splitext(self.save_name or "日报表.xlsx")
+        date_suffix = self.working_date.strftime("%Y%m%d")
+        filename = f"{base}_{date_suffix}{ext}"
+        self.output_file = os.path.normpath(os.path.abspath(os.path.expanduser(os.path.join(self.output_dir, filename))))
+        self.save_file_label.setText(self.output_file)
+        # start the normal workers
+        self.start_meituan_fetch()
+        self.get_op_data()
+        self.get_special_data()
+        self.start_douyin()
+        self.start_elec_fetch()
+
+    def on_batch_toggled(self, state):
+        enabled = state == 2 or state == True
+        self.batch_mode = enabled
+        # enable/disable start/end date editors
+        self.start_date_edit.setEnabled(enabled)
+        self.end_date_edit.setEnabled(enabled)
 
     def load_config(self):
         """加载配置文件（如上次保存目录、选中文件等）"""
@@ -129,10 +184,12 @@ class MyApp(QWidget):
                 self.output_dir = config.get("output_dir", self.output_dir)
                 self.save_name = config.get("save_name", "日报表.xlsx")   
                 self.selected_file = config.get("selected_file", self.selected_file)
-                self.output_file = os.path.join(self.output_dir, self.save_name) 
-                logger.info(f'outputfile{self.output_file}')   
+                # normalize paths from config to platform-native format
+                outpath = os.path.join(self.output_dir, self.save_name)
+                self.output_file = os.path.normpath(os.path.abspath(os.path.expanduser(outpath)))
+                logger.info(f'outputfile   kf{self.output_file}')   
                 self.electric_meter_value = config.get("electric_meter_value", self.electric_meter_value)
-                self.machine_count = config.get("machine_count", self.machine_count)
+                self.machine_sum = config.get("machine_sum", self.machine_sum)
             except Exception as e:
                 logger.warning(f"加载配置文件失败: {e}")
         else:
@@ -145,7 +202,7 @@ class MyApp(QWidget):
             "last_dir": self.last_dir,
             "selected_file": self.selected_file,
             "electric_meter_value": self.electric_meter_value,
-            "machine_count": self.machine_count,
+            "machine_sum": self.machine_sum,
             "output_dir":self.output_dir,
             "save_name": self.save_name or None,
             # "cookies":{
@@ -164,6 +221,45 @@ class MyApp(QWidget):
         h_layout = QHBoxLayout()
         layout.setSpacing(16)
         layout.setContentsMargins(30, 30, 30, 30)
+
+        # 日期选择控件（默认昨天）
+        date_layout = QHBoxLayout()
+        date_label = QLabel("选择日期：")
+        date_label.setStyleSheet("font-size: 15px; color: #333;")
+        date_layout.addWidget(date_label)
+
+        # 单日选择
+        self.date_edit = QDateEdit()
+        self.date_edit.setCalendarPopup(True)
+        try:
+            qd = QDate(self.working_date.year, self.working_date.month, self.working_date.day)
+        except Exception:
+            qd = QDate.currentDate().addDays(-1)
+        self.date_edit.setDate(qd)
+        self.date_edit.dateChanged.connect(self.update_working_date)
+        date_layout.addWidget(self.date_edit)
+
+        # 批量选择开关
+        self.batch_checkbox = QCheckBox("批量生成")
+        self.batch_checkbox.stateChanged.connect(self.on_batch_toggled)
+        date_layout.addWidget(self.batch_checkbox)
+
+        # 批量开始/结束日期（默认昨天），初始禁用
+        self.start_date_edit = QDateEdit()
+        self.start_date_edit.setCalendarPopup(True)
+        self.start_date_edit.setDate(qd)
+        self.start_date_edit.setEnabled(False)
+        date_layout.addWidget(QLabel("开始："))
+        date_layout.addWidget(self.start_date_edit)
+
+        self.end_date_edit = QDateEdit()
+        self.end_date_edit.setCalendarPopup(True)
+        self.end_date_edit.setDate(qd)
+        self.end_date_edit.setEnabled(False)
+        date_layout.addWidget(QLabel("结束："))
+        date_layout.addWidget(self.end_date_edit)
+
+        layout.addLayout(date_layout)
 
         # 显示选中文件路径
         self.file_label = QLabel(self.selected_file or "未选择文件")
@@ -220,6 +316,7 @@ class MyApp(QWidget):
         # 按钮点击事件
         def open_in_explorer():
             file_path = self.output_file
+            logger.debug("filepath"+file_path)
             if not os.path.isabs(file_path):
                 file_path = os.path.abspath(file_path)
             if os.path.exists(file_path):
@@ -248,9 +345,22 @@ class MyApp(QWidget):
 
         self.setLayout(layout)
 
+    def update_working_date(self, qdate: QDate):
+        """Slot: update self.working_date and self.working_datetime when user picks a date."""
+        try:
+            year = qdate.year()
+            month = qdate.month()
+            day = qdate.day()
+            self.working_date = datetime.combine(datetime(year, month, day), datetime.min.time())
+            self.working_datetime = self.working_date
+            logger.info(f"工作日期设置为: {self.working_date}")
+        except Exception as e:
+            logger.warning(f"更新工作日期失败: {e}")
+
     def update_save_name(self, text):
         self.save_name = self.save_name_edit.text().strip()
-        self.output_file = os.path.join(self.output_dir, self.save_name)
+        # ensure platform-native path
+        self.output_file = os.path.normpath(os.path.abspath(os.path.expanduser(os.path.join(self.output_dir, self.save_name))))
 
         self.save_config()
         self.save_file_label.setText(self.output_file)
@@ -260,18 +370,36 @@ class MyApp(QWidget):
     def select_save_dir(self):
         dir_path = QFileDialog.getExistingDirectory(self, "选择保存目录", self.last_dir)
         if dir_path:
+            # handle file:// URLs or POSIX-style leading slash on Windows like '/C:/...'
+            try:
+                # strip file:// scheme if present
+                if dir_path.startswith('file://'):
+                    # url -> path
+                    from urllib.parse import urlparse, unquote
+                    p = urlparse(dir_path)
+                    dir_path = unquote(p.path or '')
+                # if path looks like '/C:/...' on Windows, remove leading '/'
+                if os.name == 'nt' and len(dir_path) >= 3 and dir_path[0] == '/' and dir_path[2] == ':' :
+                    dir_path = dir_path[1:]
+            except Exception:
+                pass
+
+            # normalize and expand user (~)
+            dir_path = os.path.normpath(os.path.abspath(os.path.expanduser(dir_path)))
+            logger.info(f"选择保存目录(原始): {dir_path}")
+
             self.output_dir = dir_path
             self.save_dir_label.setText(dir_path)
-            
-            self.output_file = os.path.join(self.output_dir, self.save_name_edit.text().strip() or "日报表.xlsx")
+
+            self.output_file = os.path.normpath(os.path.abspath(os.path.expanduser(os.path.join(self.output_dir, self.save_name_edit.text().strip() or "日报表.xlsx"))))
             self.save_config()
             self.save_file_label.setText(self.output_file)
         else:
             self.save_dir_label.setText("未选择保存目录")
 
     def on_machine_changed(self, value):
-        self.machine_count = int(value)
-        print(f"机器数量变为: {self.machine_count}")
+        self.machine_sum = int(value)
+        print(f"机器数量变为: {self.machine_sum}")
 
     def on_meter_changed(self, value):
         self.electric_meter_value = value
@@ -286,6 +414,8 @@ class MyApp(QWidget):
             "所有文件 (*.*)"
         )
         if file_path:
+            # normalize selected file path
+            file_path = os.path.normpath(os.path.abspath(os.path.expanduser(file_path)))
             self.selected_file = file_path
             self.file_label.setText(file_path)
             # 更新 last_dir 为当前选择文件所在目录
@@ -293,7 +423,7 @@ class MyApp(QWidget):
             self.save_config()
         else:
             self.file_label.setText("未选择文件")
-            self.selected_file = "~/Documents/日报表模板.xlsx"
+            self.selected_file = os.path.expanduser("~/Documents/日报表模板.xlsx")
     def update_view(self):
 
         if self.selected_file:
