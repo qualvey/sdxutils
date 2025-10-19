@@ -1,6 +1,6 @@
 import sys
 import os
-sys.path.append(os.path.abspath("/Users/ryu/code/sdxutils/src"))
+sys.path.append(os.path.abspath("./src"))
 # sys.path.append(os.path.abspath("../src"))  # 临时加入 src 目录到 sys.path
 
 from meituan import MeituanService
