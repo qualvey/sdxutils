@@ -6,8 +6,9 @@ dependencies = [
   "coloredlogs>=15.0.1",
   "opencv-python>=4.12.0.88",
   "openpyxl",
-  "pillow>=11.3.0",
-  "pyside6>=6.9.1",
-  "pytz>=2025.2",
+  "pillow",
+  "pyside6",
+  "pytz",
   "requests>=2.32.4",
+  "pytest"
 ]

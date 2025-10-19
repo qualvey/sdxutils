@@ -29,3 +29,5 @@ et/
 ./ui/
 
 
+myapp.log
+log/debug.log

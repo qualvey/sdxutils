@@ -1,0 +1,2329 @@
+ ElecDataService init	  - 2025-10-19 05:07:56,959  - INFO - operation/elecdata.py:28 
+ 数� 获取抖音数据成功.	  - 2025-10-19 05:07:58,481  - INFO - douyin/main.py:147 
+ 详细原始json:{
+    "BaseResp": {
+        "StatusCode": 0,
+        "StatusMessage": ""
+    },
+    "data": {
+        "list": [
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 3990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 24,
+                    "insure_amount": 0,
+                    "merchant_amount": 3631,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 3990,
+                    "partner_commission_amount": 80,
+                    "pay_amount": 3990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 279,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 3990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 359,
+                    "verify_amount": 3990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562574275320873023",
+                "code": "107171216304546",
+                "currency": "",
+                "cursor": "7562575306310043648",
+                "expect_withdraw_time": 1761231307,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012458273892838613134676",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089112944898584676",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760799044,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 3990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 20000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/64420662930d4a508eae56d0fa996679~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=sHIZF%2FuCS%2BfSSWvMhmoPlYk4%2B3g%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1844683461807139",
+                    "title": "【特惠包时段】39.9畅玩24小时指定单双卡座可用"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562575306310043648",
+                "verify_time": 1760799307
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 9900,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 59,
+                    "insure_amount": 0,
+                    "merchant_amount": 9009,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 9900,
+                    "partner_commission_amount": 198,
+                    "pay_amount": 9900,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 693,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 9900,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 891,
+                    "verify_amount": 9900,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562561258881302591",
+                "code": "107164195592450",
+                "currency": "",
+                "cursor": "7562574305738786870",
+                "expect_withdraw_time": 1761231083,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012471220932505813686794",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089155734722586794",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760796010,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 9900,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 30000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/65a598f6627f49d58d0d831a0c54d5e2~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=std3sWHplW9aOfldYC6BSAvw9nY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843760861768744",
+                    "title": "【新会员专享】99代300网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562574305738786870",
+                "verify_time": 1760799083
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 3990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 24,
+                    "insure_amount": 0,
+                    "merchant_amount": 3631,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 3990,
+                    "partner_commission_amount": 80,
+                    "pay_amount": 3990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 279,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 3990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 359,
+                    "verify_amount": 3990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562573624009113636",
+                "code": "107171274222946",
+                "currency": "",
+                "cursor": "7562573625644042279",
+                "expect_withdraw_time": 1761230910,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012432261145088213055287",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089155851243865287",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760798895,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 3990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 20000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p26-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/64420662930d4a508eae56d0fa996679~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=weV%2BRbTSWkR3CV5sHz3P8f5Fb40%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1844683461807139",
+                    "title": "【特惠包时段】39.9畅玩24小时指定单双卡座可用"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562573625644042279",
+                "verify_time": 1760798910
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 2590,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 16,
+                    "insure_amount": 0,
+                    "merchant_amount": 2356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 2590,
+                    "partner_commission_amount": 52,
+                    "pay_amount": 2590,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 182,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 2590,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 234,
+                    "verify_amount": 2590,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562543484465577993",
+                "code": "190717512140866",
+                "currency": "",
+                "cursor": "7562543537137420324",
+                "expect_withdraw_time": 1761223892,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012471212896947413334340",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089176552859544340",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760791875,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 2590,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 8000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=gpKwlgloYjFAREK8Om0RXPlZVRY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843497523090488",
+                    "title": "【特惠包时段】高竞区畅玩3小时25.9"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562543537137420324",
+                "verify_time": 1760791892
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 2590,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 16,
+                    "insure_amount": 0,
+                    "merchant_amount": 2356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 2590,
+                    "partner_commission_amount": 52,
+                    "pay_amount": 2590,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 182,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 2590,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 234,
+                    "verify_amount": 2590,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562536245307555890",
+                "code": "107177276589874",
+                "currency": "",
+                "cursor": "7562536968606074923",
+                "expect_withdraw_time": 1761222361,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012471198189875413547630",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089176610961627630",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760790190,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 2590,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 8000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=gpKwlgloYjFAREK8Om0RXPlZVRY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843497523090488",
+                    "title": "【特惠包时段】高竞区畅玩3小时25.9"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562536968606074923",
+                "verify_time": 1760790361
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1831,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1831,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 159,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562536164926685225",
+                "code": "107171164551650",
+                "currency": "",
+                "cursor": "7562536505151850522",
+                "expect_withdraw_time": 1761222253,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012453128102221013709053",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089149153234269053",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760790166,
+                "platform_coupon_list": [
+                    {
+                        "coupon_amount": 159,
+                        "coupon_amount_type": 1,
+                        "coupon_name": "防守活动-lose_优惠详情:7550996821637908534"
+                    }
+                ],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=m8gIV5SH2g%2BCSVrR1VtoR%2BclAHI%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562536505151850522",
+                "verify_time": 1760790253
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1490,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 9,
+                    "insure_amount": 0,
+                    "merchant_amount": 1356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1490,
+                    "partner_commission_amount": 30,
+                    "pay_amount": 1490,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 104,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1490,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 134,
+                    "verify_amount": 1490,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562521327376089114",
+                "code": "107186231068418",
+                "currency": "",
+                "cursor": "7562521994160310287",
+                "expect_withdraw_time": 1761218878,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012458185766656213731496",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089112502131541496",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760786713,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1490,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 5000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=gpKwlgloYjFAREK8Om0RXPlZVRY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843477031248904",
+                    "title": "【特惠包时段】畅玩3小时【休闲/竞技区]"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562521994160310287",
+                "verify_time": 1760786878
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562521369289130035",
+                "code": "107177214261250",
+                "currency": "",
+                "cursor": "7562521672771700782",
+                "expect_withdraw_time": 1761218796,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012474730868838613705021",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089171090996825021",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760786721,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=m8gIV5SH2g%2BCSVrR1VtoR%2BclAHI%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562521672771700782",
+                "verify_time": 1760786796
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562493420570542090",
+                "code": "107177155809218",
+                "currency": "",
+                "cursor": "7562500264561870888",
+                "expect_withdraw_time": 1761213812,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012432140163251413434823",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089112267266264823",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760780215,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=m8gIV5SH2g%2BCSVrR1VtoR%2BclAHI%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562500264561870888",
+                "verify_time": 1760781812
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562490693781422143",
+                "code": "103716396737826",
+                "currency": "",
+                "cursor": "7562499703125739560",
+                "expect_withdraw_time": 1761213682,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012448572702029013773411",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089101156949783411",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760779579,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p11-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=CGf2HG1qhMPFQhUcUxjTiu66KSQ%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562499703125739560",
+                "verify_time": 1760781682
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 2690,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 16,
+                    "insure_amount": 0,
+                    "merchant_amount": 2448,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 2690,
+                    "partner_commission_amount": 54,
+                    "pay_amount": 2690,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 188,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 2690,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 242,
+                    "verify_amount": 2690,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562493374034345994",
+                "code": "107185383037698",
+                "currency": "",
+                "cursor": "7562493473925662761",
+                "expect_withdraw_time": 1761212232,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012474686223360213291197",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089089554725141197",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760780202,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 2690,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 8000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p26-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=Y%2F0rkyi7ZI%2F%2F1Eov2ukQ%2BtqmUhE%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843497427815451",
+                    "title": "【特惠包时段】休闲/竞技区 26.9畅玩5小时"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562493473925662761",
+                "verify_time": 1760780232
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 29900,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 179,
+                    "insure_amount": 0,
+                    "merchant_amount": 27209,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 29900,
+                    "partner_commission_amount": 598,
+                    "pay_amount": 29900,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 2093,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 29900,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 2691,
+                    "verify_amount": 29900,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562478299924004906",
+                "code": "107163908955842",
+                "currency": "",
+                "cursor": "7562478469272176686",
+                "expect_withdraw_time": 1761208741,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012439406422425813317089",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089159451350107089",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760776695,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 29900,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 58800
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/aa51d5e62008467f87ed6778c4642333~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=Y8Tmhzs4e5jgto71NDU2fXAMeFE%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843495646114828",
+                    "title": "（新老通用）299代588网费+自制饮品一杯"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562478469272176686",
+                "verify_time": 1760776741
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1490,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 9,
+                    "insure_amount": 0,
+                    "merchant_amount": 1356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1490,
+                    "partner_commission_amount": 30,
+                    "pay_amount": 1490,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 104,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1490,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 134,
+                    "verify_amount": 1490,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562470922079305762",
+                "code": "106717300997826",
+                "currency": "",
+                "cursor": "7562471656430536744",
+                "expect_withdraw_time": 1761207156,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012418240727552213189467",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089132839976029467",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760774975,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1490,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 5000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p11-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=bgRH%2Bi1eT0xs6xE0Mnur%2Fc3UF%2F4%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843477031248904",
+                    "title": "【特惠包时段】畅玩3小时【休闲/竞技区]"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562471656430536744",
+                "verify_time": 1760775156
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562470831448948762",
+                "code": "107159792338274",
+                "currency": "",
+                "cursor": "7562471146067593242",
+                "expect_withdraw_time": 1761207035,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012448520761165013749933",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089148391437469933",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760774957,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=m8gIV5SH2g%2BCSVrR1VtoR%2BclAHI%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562471146067593242",
+                "verify_time": 1760775035
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562412367964700706",
+                "code": "107181603649474",
+                "currency": "",
+                "cursor": "7562412731127662631",
+                "expect_withdraw_time": 1761193433,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012457970985165013052409",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089111566066262409",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760761340,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=m8gIV5SH2g%2BCSVrR1VtoR%2BclAHI%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562412731127662631",
+                "verify_time": 1760761433
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1490,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 9,
+                    "insure_amount": 0,
+                    "merchant_amount": 1356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1490,
+                    "partner_commission_amount": 30,
+                    "pay_amount": 1490,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 104,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1490,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 134,
+                    "verify_amount": 1490,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562405216248840246",
+                "code": "107161566228418",
+                "currency": "",
+                "cursor": "7562405650363205678",
+                "expect_withdraw_time": 1761191786,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012439277548544213496768",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089115745422426768",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760759678,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1490,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 5000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=gpKwlgloYjFAREK8Om0RXPlZVRY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843477031248904",
+                    "title": "【特惠包时段】畅玩3小时【休闲/竞技区]"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562405650363205678",
+                "verify_time": 1760759786
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1490,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 9,
+                    "insure_amount": 0,
+                    "merchant_amount": 1356,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1490,
+                    "partner_commission_amount": 30,
+                    "pay_amount": 1490,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 104,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1490,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 134,
+                    "verify_amount": 1490,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562404949079097383",
+                "code": "107148969252354",
+                "currency": "",
+                "cursor": "7562405473375275049",
+                "expect_withdraw_time": 1761191742,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012478699814246613124115",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089078135811544115",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760759615,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1490,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 5000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c1fabc7cda6e4f96915de23a664ae66a~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=gpKwlgloYjFAREK8Om0RXPlZVRY%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1843477031248904",
+                    "title": "【特惠包时段】畅玩3小时【休闲/竞技区]"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562405473375275049",
+                "verify_time": 1760759742
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 3990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 24,
+                    "insure_amount": 0,
+                    "merchant_amount": 3631,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 3990,
+                    "partner_commission_amount": 80,
+                    "pay_amount": 3990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 279,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 3990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 359,
+                    "verify_amount": 3990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562404222923997203",
+                "code": "107148996166114",
+                "currency": "",
+                "cursor": "7562404369150937138",
+                "expect_withdraw_time": 1761191488,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012435001499161813062229",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089078120094742229",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760759447,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 3990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 20000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p3-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/64420662930d4a508eae56d0fa996679~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=sHIZF%2FuCS%2BfSSWvMhmoPlYk4%2B3g%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1844683461807139",
+                    "title": "【特惠包时段】39.9畅玩24小时指定单双卡座可用"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562404369150937138",
+                "verify_time": 1760759488
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562403542037184551",
+                "code": "107168004042178",
+                "currency": "",
+                "cursor": "7562404087887611923",
+                "expect_withdraw_time": 1761191420,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012434999872921813082229",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089120648583702229",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760759287,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p11-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=CGf2HG1qhMPFQhUcUxjTiu66KSQ%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562404087887611923",
+                "verify_time": 1760759420
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1751,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1751,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 239,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562397443473571880",
+                "code": "107171280530306",
+                "currency": "",
+                "cursor": "7562403843355445258",
+                "expect_withdraw_time": 1761191360,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012444475300889813304671",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089105986499864671",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760757867,
+                "platform_coupon_list": [
+                    {
+                        "coupon_amount": 239,
+                        "coupon_amount_type": 1,
+                        "coupon_name": "防守活动-lose_优惠详情:7550996821637908534"
+                    }
+                ],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p26-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=DXIElG98J6N%2FFA94WW5QKnK9FR4%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562403843355445258",
+                "verify_time": 1760759360
+            },
+            {
+                "account_id": "7136075595087087628",
+                "amount": {
+                    "brand_funder_subsidy_amount": 0,
+                    "broker_commission": 0,
+                    "clerk_commission_amount": 0,
+                    "coupon_pay_amount": 1990,
+                    "craftsman_commission_amount": 0,
+                    "donated_amount": 0,
+                    "extra_amount": {},
+                    "handling_fee_amount": 12,
+                    "insure_amount": 0,
+                    "merchant_amount": 1811,
+                    "merchant_funder_subsidy_amount": 0,
+                    "month_pay_interest_amount": 0,
+                    "original_amount": 1990,
+                    "partner_commission_amount": 40,
+                    "pay_amount": 1990,
+                    "payment_discount_amount": 0,
+                    "platform_service_amount": 139,
+                    "postage_amount": 0,
+                    "pre_sale_amount": 1990,
+                    "seat_selection_amount": 0,
+                    "talent_commission_amount": 0,
+                    "ticket_amount": 0,
+                    "total_fee": 179,
+                    "verify_amount": 1990,
+                    "virtual_platform_amount": 0,
+                    "zlb_promotion_fee_amount": 0
+                },
+                "amount_foreign": {},
+                "can_cancel": false,
+                "can_refund_for_list_pre": true,
+                "cannot_cancel_msg": "已过可撤销核销时间，请协助买家退款",
+                "certificate_id": "7562389989881184307",
+                "code": "107159504364978",
+                "currency": "",
+                "cursor": "7562390630064850978",
+                "expect_withdraw_time": 1761188295,
+                "extra_field": {},
+                "fee_info": {
+                    "platform_service_ratio": 700
+                },
+                "fulfil_done_delay_seconds": 3600,
+                "fulfil_type": 5,
+                "is_donated_order": false,
+                "item_order_id": "800012444462929638613178264",
+                "item_order_num": 1,
+                "merchant_coupon_list": [],
+                "now_time": 1760821678,
+                "operator": {
+                    "nickname": "张家山",
+                    "uid": "156******02",
+                    "verifier": 92837348910184
+                },
+                "order_id": "1089154626439708264",
+                "order_tag": [
+                    {
+                        "tag_name": "普通",
+                        "tag_type": 1
+                    }
+                ],
+                "pay_status": 0,
+                "pay_time": 1760756133,
+                "platform_coupon_list": [],
+                "poi": {
+                    "city": "芜湖市",
+                    "poi_id": "6828149180763080708",
+                    "poi_name": "树呆熊网咖(芜湖张家山店)",
+                    "province": "安徽省"
+                },
+                "product_sub_type": 0,
+                "product_type": 1,
+                "remark_info": {},
+                "service_order_id": "",
+                "settlement_status": 0,
+                "show_cancel_verify": 1,
+                "sku": {
+                    "amount": {
+                        "actual_amount": 1990,
+                        "amount_foreign": {
+                            "amount": {
+                                "actual_amount": 0,
+                                "currency": "",
+                                "market_amount": 0
+                            },
+                            "fx_rate": ""
+                        },
+                        "currency": "",
+                        "market_amount": 10000
+                    },
+                    "discount": {
+                        "ratio": 0,
+                        "type": 0
+                    },
+                    "full_category": "休闲娱乐·传统娱乐·网吧/网咖",
+                    "image": "https://p26-sign.douyinpic.com/tos-cn-i-hf2m9xxmck/c816af89b4aa4b00a169c3f7f37e79b0~tplv-shrink:400:0.image?lk3s=d3d1baa4&x-expires=1760842800&x-signature=DXIElG98J6N%2FFA94WW5QKnK9FR4%3D&from=3553737380",
+                    "is_super_goods": false,
+                    "sale_specs": [],
+                    "seat_selection_type": 0,
+                    "sku_id": "1809049855517707",
+                    "title": "【新会员专享】19.9代100 网费"
+                },
+                "status": 1,
+                "user": {},
+                "verify_id": "7562390630064850978",
+                "verify_time": 1760756295
+            }
+        ],
+        "pagination": {
+            "cursor": "7562390630064850978",
+            "flag": 1,
+            "has_more": false,
+            "is_asc": false,
+            "page_count": 100,
+            "page_index": 1,
+            "page_size": 100,
+            "total_count": 21
+        }
+    },
+    "log_id": "20251019050757F7408EC2A39CEA8F4088",
+    "now": "1760821678315",
+    "status_code": 0,
+    "status_msg": ""
+}	  - 2025-10-19 05:07:58,482  - INFO - douyin/main.py:148 
+ 抖音列表	  - 2025-10-19 05:07:58,511  - INFO - douyin/main.py:181 
+ 
+39.9
+99
+39.9
+25.9
+25.9
+19.9
+14.9
+19.9
+19.9
+19.9
+26.9
+299
+14.9
+19.9
+19.9
+14.9
+14.9
+39.9
+19.9
+19.9
+19.9	  - 2025-10-19 05:07:58,512  - INFO - douyin/main.py:189 
