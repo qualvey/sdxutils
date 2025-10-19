@@ -1,0 +1,4 @@
+    // "mt": "bizType=2; edper=1tqXbt3I0wEHfCGyvgfMeHdKNPGHLF_4EkWAyfK5771hT7O5UNd0Tp6vjaZxY8adm7uisDVVq_lAs-8OiTNRWw; AWPTALOS2596=; WEBDFPID=1758131109387IKYIQGEfd79fef3d01d5e9aadc18ccd4d0c95072322-1758131109387-1758131109387IKYIQGEfd79fef3d01d5e9aadc18ccd4d0c95072322; _lxsdk_cuid=19958c7be3cc8-0acac832f786b18-26061951-fa000-19958c7be3cc8; _lxsdk=19958c7be3cc8-0acac832f786b18-26061951-fa000-19958c7be3cc8; logan_session_token=nz9bi9klxok92gx5rp10; mpmerchant_portal_shopid=1340799757; merchantBookShopID=1340799757; merchantCategoryID=20042; _hc.v=48895969-7fbd-b623-603e-963807098421.1758131111; AWPTALOS1473=; _lxsdk_s=19958c7be3d-3fc-80f-881%7C%7C28",
+
+这个是原来的美团cookie，
+现在的格式变了
