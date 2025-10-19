@@ -1,17 +1,12 @@
 
 
-from datetime import datetime, timedelta
-
 import argparse, os, sys, json, requests
-
-from PySide6.QtWidgets import QWidget
-from PySide6.QtCore import QThread, Signal
 from typing import Optional, Dict, Any, Tuple
+from datetime import datetime, timedelta
 
 from tools import env
 from tools import logger as mylogger
 from typing import Any, Dict, Tuple, Optional
-from requests.exceptions import RequestException
 
 logger = mylogger.get_logger(__name__)
 

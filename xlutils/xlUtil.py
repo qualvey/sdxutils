@@ -317,8 +317,8 @@ class Wshandler:
         "新会员"    :     "newMember"
     }
         elec_usage = self.data.get("elecworker",0)
-        mt = self.data["meituan"].get("mt_total",0)
-        dy = self.data["douyin"].get("dy_total",0)
+        mt = self.data["meituan"].get("meituan_total",0)
+        dy = self.data["douyin"].get("douyin_total",0)
         english = self.data.get("operation",{})
         main_data: dict[str, float | None] = {
             "用电量" : elec_usage ,
