@@ -1,7 +1,7 @@
 import sys,os
 
 sys.path.append(os.path.abspath("./src"))
-
+#json{'douyin_total': 146.3, 'dy_count': 7, 'dy_good': 0}
 # sys.path.append(os.path.abspath("../src"))  # 临时加入 src 目录到 sys.path
 from douyin import DouyinService
 from datetime import datetime
