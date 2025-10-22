@@ -1,1 +1,11 @@
- 美团数据日期 2025-10-16	  - 2025-10-19 08:24:41,277  - INFO - meituan/main.py:72 
+ loginservice  initialized	  - 2025-10-23 00:36:10,226  - INFO - tools/login.py:40 
+ token文件存在	  - 2025-10-23 00:36:10,227  - INFO - tools/login.py:55 
+ token状态: False	  - 2025-10-23 00:36:10,228  - INFO - tools/login.py:57 
+ token过期	  - 2025-10-23 00:36:10,228  - INFO - tools/login.py:63 
+ 开始扫码登录	  - 2025-10-23 00:36:10,229  - INFO - tools/login.py:271 
+ 获取 uuid 中...	  - 2025-10-23 00:36:10,230  - INFO - tools/login.py:70 
+ get_uuid 请求 URL: http://open.weixin.qq.com/connect/qrconnect 参数: {'appid': 'wx5322e698d6ac98d4', 'scope': 'snsapi_login', 'redirect_uri': 'http://sso.cloudnetcafe.com/#/bindingAccount', 'state': '25750', 'login_type': 'jssdk', 'self_redirect': 'false', 'styletype': None, 'sizetype': None, '`bgcolor': None, 'rst': None, 'style': 'black', 'href': 'https://hub.sdxnetcafe.com/src/static/wxlogin.css', 'f': 'xml', '_': '1743032647062'}	  - 2025-10-23 00:36:10,230  - DEBUG - tools/login.py:106 
+ get_uuid -> 0819AujJ26Gh0w3W	  - 2025-10-23 00:36:10,552  - DEBUG - tools/login.py:116 
+ get_qrcode status=200 content-type=image/jpeg len=47409	  - 2025-10-23 00:36:11,032  - DEBUG - tools/login.py:154 
+ main_flow: qr_bytes length = 47409	  - 2025-10-23 00:36:11,032  - DEBUG - tools/login.py:284 
+ 二维码已保存到: C:\Users\ryu\code\sdxutils\temp\qr_0819AujJ26Gh0w3W.png	  - 2025-10-23 00:36:11,033  - INFO - tools/login.py:298 

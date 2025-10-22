@@ -6,16 +6,18 @@ from datetime import datetime
 
 from tools    import env
 from tools      import logger as mylogger
-from tools.iheader import headers
+# from tools.iheader import headers
+from tools import HeaderService
 from typing import Optional
 
 logger = mylogger.get_logger(__name__)
 scheme = 'https://'
+headers = HeaderService().headers
 hostname = headers['Host']
 # {'detail':resolved_data, 'sum':total_fee}
 
 class SpecialFee:
-    def __init__(self,date:datetime):
+    def __init__(self,date:datetime, token:str):
         self.date = date
         self.data = {}
         self.run()

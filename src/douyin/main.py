@@ -145,7 +145,7 @@ class DouyinService:
 
                 if douyin_json:
                     logger.info("获取抖音数据成功.")
-                    logger.info(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
+                    logger.debug(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
 
                     status_code = douyin_json.get("status_code")
                     if status_code == 4000100:

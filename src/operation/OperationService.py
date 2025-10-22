@@ -1,14 +1,19 @@
 import requests,json
 
 from tools import env
-from tools.iheader import headers
+from tools import HeaderService
 from datetime import  datetime
 from tools import logger as mylogger
 
 logger = mylogger.get_logger(__name__)
+header_service = HeaderService()
+headers = header_service.headers
+#TODO: add token to headers, add parameter with token
 
 class OperationService:
-    def __init__(self,datetime:datetime):
+    def __init__(self,datetime:datetime,token:str):
+        self.headers = headers
+        self.headers['Authorization'] = token
         self.scheme = 'https://'
         self.hostname = headers['Host']
         self.base_url = f"{self.scheme}{self.hostname}"
@@ -88,10 +93,12 @@ class OperationService:
         return out
 
 if __name__ == '__main__':
-    op = OperationService(datetime.today())
-    #print(today_income(datetime.today()))
-    date_str = datetime.strptime('2025-04-01', '%Y-%m-%d')
-    #data = resolve_operation_data(datetime.today())
-    data = op.resolve_operation_data(op.fetch_data())
-    form_data = json.dumps(data, indent=4)
-    print(form_data.__class__)
+    #depcrecated below
+    # op = OperationService(datetime.today())
+    # #print(today_income(datetime.today()))
+    # date_str = datetime.strptime('2025-04-01', '%Y-%m-%d')
+    # #data = resolve_operation_data(datetime.today())
+    # data = op.resolve_operation_data(op.fetch_data())
+    # form_data = json.dumps(data, indent=4)
+    # print(form_data.__class__)
+    pass

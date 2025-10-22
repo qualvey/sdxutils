@@ -18,7 +18,9 @@ from PySide6.QtWidgets import (
 from PySide6.QtWidgets import QCheckBox
 from PySide6.QtWidgets import QDateEdit
 from PySide6.QtCore import QDate
-from PySide6.QtCore import QTimer
+from PySide6.QtCore import QTimer, Qt
+import time
+from PySide6.QtGui import QPixmap, QImage
 import signal
 #这种导入方式在pyinstall打包后会报错
 # from . import OperationWorker,SpecialFeeWorker,ElecWorker,DouyinWorker
@@ -29,16 +31,23 @@ from GUI.douyinWorker import DouyinWorker
 
 from GUI.meituanWorker import MeituanWorker
 from xlutils import Wshandler
+from tools.login import loginservice
 
 CONFIG_PATH = os.path.expanduser("~/.myapp_config.json")
 
 #点击开始，根据UI层面的参数，调用各个模块的接口，完成业务逻辑
 
+from PySide6.QtCore import Signal
+
 class MyApp(QWidget):
     working_datetime = datetime.combine(datetime.today() - timedelta(days=1), datetime.min.time())
+    show_signal = Signal(object)  # 用于显示二维码的信号
+    
     def __init__(self):
         super().__init__()
         self.setWindowTitle("数呆熊报表自动化工具")
+        # 连接信号到槽
+        self.show_signal.connect(self._show_qr)
         self.setGeometry(100, 100, 400, 180)
         self.last_dir = os.path.expanduser("~")  # 默认初始目录为用户主目录
         self.selected_file = "~/Documents/日报表模板.xlsx"  # 用户选择的输入文件路径
@@ -51,10 +60,22 @@ class MyApp(QWidget):
         # keep a QDate-based datetime used by workers
         self.working_datetime = self.working_date
         self.results = {}
+        self.token = ""
         self.workers = []
         self.completed_count = 0
         self.electric_meter_value = 0
         self.machine_sum = 76
+
+        # login service (don't auto-run login in GUI; we'll control it)
+        try:
+            self.login_service = loginservice(auto_login=False)
+            if self.login_service.cache_check():
+                self.token = self.login_service.token
+            else:
+                self.token = self.login_service.main_flow()
+        except Exception:
+            # fallback: create without args for compatibility
+            self.login_service = loginservice()
 
         self.load_config()
         self.init_ui()
@@ -71,7 +92,7 @@ class MyApp(QWidget):
         self.completed_count = 0
         infomation = json.dumps(self.results, indent=4, ensure_ascii=False)
         logger.info(f"所有任务完成，结果: {infomation}")
-        otaworker = OTAUpdater(self.results, self.working_date)
+        otaworker = OTAUpdater(self.results, self.working_date,self.token)
         thread_ota  = threading.Thread(target=otaworker.run, daemon=True)
         thread_ota.start()
         genws = Wshandler(self.working_date, self.selected_file , self.output_file, self.results)
@@ -104,7 +125,7 @@ class MyApp(QWidget):
         self.workers.append(self.meituan_worker)
 
     def get_special_data(self):
-        self.special_worker = SpecialFeeWorker('specialfee',self.working_datetime)
+        self.special_worker = SpecialFeeWorker('specialfee',self.working_datetime,self.token)
         self.special_worker.finished.connect(self.handle_finished)
         self.special_worker.error.connect(self.on_special_error)
         self.special_worker.start()
@@ -118,7 +139,7 @@ class MyApp(QWidget):
         self.elec_worker.start()
         self.workers.append(self.elec_worker)
     def get_op_data(self):
-        self.worker = OperationWorker('operation', self.working_datetime)
+        self.worker = OperationWorker('operation', self.working_datetime,self.token)
         self.worker.finished.connect(self.handle_finished)
         self.worker.error.connect(self.on_op_error)
         self.worker.start()
@@ -339,6 +360,22 @@ class MyApp(QWidget):
         self.save_file_label.setStyleSheet("font-size: 15px; color: #333;")
         layout.addWidget(self.save_file_label)
 
+        # --- 登录区域（显示二维码 + 登录按钮）
+        login_layout = QHBoxLayout()
+        self.qr_label = QLabel()
+        self.qr_label.setFixedSize(200, 200)
+        self.qr_label.setStyleSheet("border: 1px solid #ccc; background: #fff;")
+        login_layout.addWidget(self.qr_label)
+
+        login_btn_layout = QVBoxLayout()
+        self.login_btn = QPushButton("扫码登录")
+        self.login_btn.setFixedSize(120, 36)
+        self.login_btn.clicked.connect(self.start_login)
+        login_btn_layout.addWidget(self.login_btn)
+        login_btn_layout.addStretch()
+        login_layout.addLayout(login_btn_layout)
+        layout.addLayout(login_layout)
+
         # 创建开始按钮
         self.start_btn = QPushButton("开始处理")
         self.start_btn.setFixedSize(120, 40)
@@ -448,6 +485,98 @@ class MyApp(QWidget):
         box.setWindowTitle("运营数据错误")
         box.setText(msg)
         box.exec()
+
+    # ---- 登录相关的 GUI 回调与启动 ----
+    def _show_qr(self, qr_bytes: bytes):
+        """在主线程中把二维码字节显示到 self.qr_label 中。"""
+        logger.debug("进入_show_qr方法")
+        try:
+            logger.debug("显示二维码")
+            if not qr_bytes:
+                self.qr_label.setText("二维码数据为空")
+                return
+
+            image = QImage.fromData(qr_bytes)
+            # 如果解码失败，保存到临时文件以便调试
+            if image.isNull():
+                try:
+                    temp_dir = os.path.join(os.getcwd(), 'temp')
+                    os.makedirs(temp_dir, exist_ok=True)
+                    dump_path = os.path.join(temp_dir, f'qr_debug_{int(time.time())}.png')
+                    with open(dump_path, 'wb') as f:
+                        f.write(qr_bytes)
+                    logger.warning(f"解码二维码失败，已写入: {dump_path}")
+                    self.qr_label.setText("无法解析二维码，已保存到临时文件")
+                except Exception as e:
+                    logger.warning(f"保存失败: {e}")
+                    self.qr_label.setText("无法解析二维码")
+                return
+
+            pix = QPixmap.fromImage(image).scaled(self.qr_label.width(), self.qr_label.height(), Qt.AspectRatioMode.KeepAspectRatio)
+            self.qr_label.setPixmap(pix)
+            self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        except Exception as e:
+            logger.warning(f"显示二维码失败: {e}")
+
+    def _close_qr(self):
+        try:
+            self.qr_label.clear()
+        except Exception:
+            pass
+
+    def start_login(self):
+        """启动后台线程执行 login main_flow，并提供回调到 GUI。"""
+        class SafeCallback:
+            def __init__(self, app, method):
+                self.app = app
+                self.method = method
+                logger.debug(f"创建回调: {method.__name__}")
+                
+            def __call__(self, *args, **kwargs):
+                logger.debug(f"调用回调 {self.method.__name__}")
+                try:
+                    self.app.show_signal.emit(args[0] if args else None)
+                    logger.debug("信号已发出")
+                except Exception as e:
+                    logger.error(f"发送信号失败: {e}")
+
+        def worker():
+            try:
+                logger.debug("工作线程开始")
+                token = self.login_service.main_flow(
+                    show_qr_callback=SafeCallback(self, self._show_qr),
+                    close_qr_callback=SafeCallback(self, self._close_qr)
+                )
+
+                if token:
+                    logger.info("登录成功")
+                    self.token = token
+                else:
+                    logger.warning("登录未完成或失败")
+            except Exception as e:
+                logger.warning(f"登录线程出错: {e}")
+            finally:
+                # 无论成功或失败，都在主线程恢复按钮状态
+                try:
+                    QTimer.singleShot(0, lambda: self.login_btn.setEnabled(True))
+                except Exception:
+                    pass
+        if self.login_service.cache_check():
+            logger.info("已有有效登录状态，无需扫码")
+        else:
+            logger.info("启动登录线程，等待扫码...")
+            t = threading.Thread(target=worker, daemon=True)
+            t.start()
+        # 禁用按钮直到流程结束，防止重复启动
+        try:
+            self.login_btn.setEnabled(False)
+            self.qr_label.setText("等待二维码...")
+            self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        except Exception:
+            pass
+
+        # t = threading.Thread(target=worker, daemon=True)
+        # t.start()
 
     def on_douyin_error(self, msg: str):
         # 弹窗提示

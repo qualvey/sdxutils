@@ -3,8 +3,7 @@ from tools import logger as mylogger
 logger = mylogger.get_logger(__name__)
 import xml.etree.ElementTree as ET
 
-import re,requests,sys,time,base64,json,cv2,pytz,os
-import numpy as np 
+import re, requests, sys, time, base64, json, pytz, os
 from datetime import datetime, timezone
 
 
@@ -27,23 +26,48 @@ os.makedirs(temp_dir, exist_ok=True)  # 确保 temp 目录存在
 WINDOW_NAME = "QR Code Viewer"
 
 class loginservice:
-    def __init__(self):
+    def __init__(self, auto_login: bool = True):
+        self.uuid = '' 
+        self.qrcode = ''
+        """
+        登录服务逻辑类。
+
+        参数:
+        auto_login: 是否在构造时自动执行完整的扫码登录流程（默认 True，以兼容现有导入处）。
+                    GUI 程序应传入 False 并手动调用 main_flow，传入显示回调。
+        """
         self.token = ''
-        logger.info('token.init start')
+        logger.info('loginservice  initialized')
+        # if self.cache_check(cache_file=cache_file):
+        #     logger.info('缓存登录成功')
+        # else:
+        #     if auto_login:
+        #         token = self.main_flow(cache_file=cache_file)
+        #         if token:
+        #             self.token = token
+        #             logger.info('扫码登录成功')
+        #         else:
+        #             logger.error('扫码登录失败')
+ 
+
+    def cache_check(self,cache_file: str = f'{temp_dir}/token.json'):
         if os.path.isfile(cache_file):
+            logger.info('token文件存在')
             status, token = self.token_check()
             logger.info(f'token状态: {status}')
             if status:
                 logger.info("令牌未过期,不用扫码")
                 self.token = token
+                return True
             else:
-                logger.info('token过期，开始main_flow')
-                self.token = self.main_flow()
+                logger.info('token过期')
+                return False
         else:
-            logger.info('token文件不存在，开始main_flow')
-            self.token = self.main_flow()
+            logger.info('token文件不存在')
+            return False
 
     def get_uuid(self):
+        logger.info('获取 uuid 中...')
         api_endpoint = "/connect/qrconnect"
         params =  {
         "appid" : "wx5322e698d6ac98d4",
@@ -78,36 +102,27 @@ class loginservice:
         "Priority" : "u=0"
         }
         url = f"http://{headers['Host']}{api_endpoint}"
-        response = requests.get(url=url, params=params, headers=headers)
-        xml_data = response.text
-        root = ET.fromstring(xml_data)
-        uuid = root.find('uuid').text
-        if not uuid:
-            logger.error('uuid error~!!')
-        return uuid
+        try:
+            logger.debug(f'get_uuid 请求 URL: {url} 参数: {params}')
+            response = requests.get(url=url, params=params, headers=headers)
+            xml_data = response.text
+            root = ET.fromstring(xml_data)
+            elem = root.find('uuid')
+            uuid = elem.text if elem is not None else None
+            if not uuid:
+                logger.error('uuid error~!! xml response missing <uuid> element')
+                logger.debug(f'uuid xml payload: {xml_data}')
+            else:
+                logger.debug(f'get_uuid -> {uuid}')
+            self.uuid = uuid
+            return uuid
+        except Exception as e:
+            logger.warning(f'get_uuid 请求或解析失败: {e}')
+            return None
 
-    def show_img(self,response_qrcode):
-        arr = np.asarray(bytearray(response_qrcode.content), dtype=np.uint8)
-        img = cv2.imdecode(arr, cv2.IMREAD_COLOR)
-
-        if img is None:
-            logger.error("无法解码二维码图片")
-            return
-
-        # 设置窗口和图像大小
-        target_width, target_height = 300, 300
-        resized_img = cv2.resize(img, (target_width, target_height), interpolation=cv2.INTER_AREA)
-
-        # 设置浮动窗口（可调大小 + 置顶 + 不变形）
-        cv2.namedWindow(WINDOW_NAME, cv2.WINDOW_AUTOSIZE)  # WINDOW_AUTOSIZE 使窗口紧贴图像尺寸
-        cv2.setWindowProperty(WINDOW_NAME, cv2.WND_PROP_TOPMOST, 1)
-
-        # 显示缩放后的图像
-        cv2.imshow(WINDOW_NAME, resized_img)
-        cv2.waitKey(1)
-
-    def close_img(self):
-        cv2.destroyWindow(WINDOW_NAME)
+    # GUI 相关功能已移除：login 模块仅负责网络/令牌逻辑。
+    # 如果需要在 GUI 中显示二维码，请调用 main_flow 时传入 show_qr_callback(bytes)
+    # 和 close_qr_callback()。
 
     def get_qrcode(self,uuid):
         api_endpoint = f"/connect/qrcode/{uuid}"
@@ -129,8 +144,19 @@ class loginservice:
         url = f"https://{headers['Host']}{api_endpoint}"
 
         #response_qrcode = send_raw_request(raw_request_qrcode)
-        response_qrcode = requests.get(url=url, headers = headers )
-        return response_qrcode
+        try:
+            response_qrcode = requests.get(url=url, headers=headers)
+            # log for debugging
+            try:
+                ct = response_qrcode.headers.get('Content-Type')
+            except Exception:
+                ct = None
+            logger.debug(f'get_qrcode status={response_qrcode.status_code} content-type={ct} len={len(response_qrcode.content) if response_qrcode.content else 0}')
+            self.qrcode = response_qrcode
+            return response_qrcode
+        except Exception as e:
+            logger.warning(f'get_qrcode 请求失败: {e}')
+            return None
 
     def lp_wxcode(self,uuid, max_attempts=10, interval=1):
         #响应载荷格式：window.wx_errcode=405;window.wx_code='011H1G000wIeYT1NwR300yrNXp2H1G0W';
@@ -229,22 +255,74 @@ class loginservice:
         except Exception as e:
             raise ValueError(f"解码 JWT 时出错: {e}")
 
-    def main_flow(self,cache_file:str = f'{temp_dir}/token.json'):
+    def main_flow(self, cache_file: str = f'{temp_dir}/token.json',
+                  show_qr_callback=None, close_qr_callback=None):
+        """
+        执行扫码登录主流程（网络 & 令牌处理），但不直接负责显示二维码。
+
+        参数:
+        cache_file: 缓存 token 的文件路径。
+        show_qr_callback: 可选回调，接收二维码图片的 bytes 内容，GUI 层应在主线程中显示它。
+        close_qr_callback: 可选回调，登录成功时调用以关闭二维码显示。
+
+        返回:
+        token 字符串或 None
+        """
         logger.info('开始扫码登录')
         uuid = self.get_uuid()
+        if not uuid:
+            logger.error('main_flow 停止：未获得 uuid')
+            return None
         response_qrcode = self.get_qrcode(uuid=uuid)
-        self.show_img(response_qrcode)
-        wx_code = self.lp_wxcode(uuid=uuid)
-        token = self.get_token(wx_code)
-        if token:
-            self.close_img() 
-        token_json = self.decode_jwt_without_verification(token)
-        token_json['token'] = token
-        # cache_file = os.path.join(os.path.dirname(sys.executable), "token.json")
 
-        with open(cache_file, 'w') as cache:
-            json.dump(token_json, cache)
-        return token
+        # 将二维码内容交给上层 GUI 回调处理；若无回调则保存为临时文件并记录路径
+        try:
+            qr_bytes = response_qrcode.content if response_qrcode is not None else None
+        except Exception:
+            qr_bytes = None
+
+        logger.debug(f'main_flow: qr_bytes length = {len(qr_bytes) if qr_bytes else 0}')
+
+        if show_qr_callback and qr_bytes:
+            try:
+                logger.debug('调用 show_qr_callback 显示二维码')
+                show_qr_callback(qr_bytes)
+            except Exception as e:
+                logger.warning(f"执行 show_qr_callback 时出错: {e}")
+        else:
+            # headless fallback: 写到临时文件，便于用户手动打开查看
+            try:
+                qr_path = os.path.join(temp_dir, f'qr_{uuid}.png')
+                with open(qr_path, 'wb') as f:
+                    f.write(qr_bytes or b'')
+                logger.info(f"二维码已保存到: {qr_path}")
+            except Exception as e:
+                logger.warning(f"保存二维码临时文件失败: {e}")
+
+        wx_code = self.lp_wxcode(uuid=uuid)
+        token = None
+        if wx_code:
+            token = self.get_token(wx_code)
+
+        if token:
+            self.token = token
+            # 通知 GUI 关闭二维码显示（如果有）
+            if close_qr_callback:
+                try:
+                    close_qr_callback()
+                except Exception as e:
+                    logger.warning(f"执行 close_qr_callback 时出错: {e}")
+
+            token_json = self.decode_jwt_without_verification(token)
+            token_json['token'] = token
+            try:
+                with open(cache_file, 'w') as cache:
+                    json.dump(token_json, cache)
+            except Exception as e:
+                logger.warning(f"写入 token 缓存失败: {e}")
+            return token
+        else:
+            return None
 
     def token_check(self,cache_file: str = f'{temp_dir}/token.json'):
     
