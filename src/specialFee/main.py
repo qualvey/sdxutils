@@ -1,16 +1,13 @@
-import requests
-import json
-import datetime
+import requests,    json
+
 from datetime import datetime
 
-
-from tools    import env
-from tools      import logger as mylogger
-# from tools.iheader import headers
-from tools import HeaderService
+from tools    import env, HeaderService
 from typing import Optional
 
-logger = mylogger.get_logger(__name__)
+from tools import LoggerService
+logger = LoggerService(__name__).logger
+
 scheme = 'https://'
 headers = HeaderService().headers
 hostname = headers['Host']
@@ -19,6 +16,7 @@ hostname = headers['Host']
 class SpecialFee:
     def __init__(self,date:datetime, token:str):
         self.date = date
+        headers['Authorization'] = token
         self.data = {}
         self.run()
         

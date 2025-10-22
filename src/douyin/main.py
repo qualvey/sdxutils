@@ -4,11 +4,12 @@ from datetime import datetime, timedelta
 from urllib.parse import urlparse, parse_qs
 
 from tools import env
-from tools.logger import get_logger
+from tools import LoggerService
+logger = LoggerService(__name__).logger
+
 from typing  import Optional, Tuple
 from decimal import Decimal, ROUND_HALF_UP
 
-logger = get_logger(__name__)
 #just paste the link here to extract parameters
 origin_url:str = "https://life.douyin.com/life/infra/v1/review/get_review_list/?life_account_ids=7548743672642127912&poi_id=6828149180763080708&tags=1,9,5,4,10,8,7,50,&sort_by=2&life_account_id=7136075595087087628&query_time_start=1759161600&query_time_end=1759247999&search_after=&cursor=0&count=10&top_rate_ids=&reply_display_by_level=1&root_life_account_id=7136075595087087628&store_type=2&source=1"
 cookie:str         = env.configjson['cookies']['dy']

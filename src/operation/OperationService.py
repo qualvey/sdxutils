@@ -3,9 +3,9 @@ import requests,json
 from tools import env
 from tools import HeaderService
 from datetime import  datetime
-from tools import logger as mylogger
+from tools import LoggerService
+logger = LoggerService(__name__).logger
 
-logger = mylogger.get_logger(__name__)
 header_service = HeaderService()
 headers = header_service.headers
 #TODO: add token to headers, add parameter with token

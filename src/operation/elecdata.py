@@ -1,16 +1,12 @@
-from openpyxl import load_workbook, Workbook
-from openpyxl.utils import coordinate_to_tuple
 
+from openpyxl.utils import coordinate_to_tuple
 import tkinter as tk
 from datetime import datetime, date, timedelta
-
 from tools import env
-from tools.logger import get_logger
-
+from tools import LoggerService
+logger = LoggerService(__name__).logger
 import sqlite3
 from typing import Optional
-
-logger = get_logger(__name__)
 
 class UserCancledException(Exception):
     pass
@@ -54,7 +50,7 @@ class ElecDataService:
             return False
 
     def update_sql(self,record_date:datetime, energy_consumed:float):
-        print(f"更新数据库，日期: {record_date}, 用电量: {energy_consumed} 0099")    
+        logger.info(f"更新数据库，日期: {record_date}, 用电量: {energy_consumed} 0099")    
 
         record_date_str:str = record_date.strftime('%Y-%m-%d')
         try:
@@ -80,9 +76,10 @@ class ElecDataService:
     from openpyxl.utils import coordinate_to_tuple
 
     from openpyxl.worksheet.worksheet import Worksheet
+
     @staticmethod
     def get_row_by_date(worksheet:Worksheet, date:datetime, start_cell="A1", end_cell="A35") -> Optional[int]:
-        date_str:str = str(date.date())
+
         try:
             min_row, min_col = coordinate_to_tuple(start_cell)
             max_row, max_col = coordinate_to_tuple(end_cell)
@@ -112,8 +109,7 @@ class ElecDataService:
             root = tk.Tk()
             root.title("输入电表数据")
             root.geometry('300x150')
-
-            input_result = {'value': 0.0  }
+            input_result = {'value': 0.0 }
 
             def on_enter_pressed(event=None):
                 val = entry.get()
@@ -151,10 +147,36 @@ class ElecDataService:
             result = ele_usage - previous_day_value
             logger.info(f'用电量{result}')
         else:
+            root = tk.Tk()
+            # root.withdraw()  # 隐藏主窗口
+            root.title("前一天数据缺失")
+            root.geometry('400x200')
+            input_result = {'value': 0.0 }
+            def on_enter_pressed(event=None):
+                val = entry.get()
+                try:
+                    input_result['value'] = float(val)
+                    root.quit()
+                except ValueError:
+                    label.config(text="请输入有效数字")
+            tk.Label(root, text=f"请输入前一日用电量：{(search_date-timedelta(days=1)).strftime('%Y-%m-%d')}").pack(pady=10)
+            entry = tk.Entry(root)
+            entry.pack()
+            entry.bind("<Return>", on_enter_pressed)
+
+            tk.Button(root, text="确认", command=on_enter_pressed).pack(pady=10)
+            label = tk.Label(root, text="")
+            label.pack()
+
+            root.mainloop()
+            root.destroy()
+            
             logger.warning(f'前一天<{previous_day}>的数据不存在,是否添加? y<int>/n')
-            user_input = input(f'输入 y 紧跟电表数据，例如 y123.4，或 n 退出\n').strip().lower()
-            if user_input.startswith("y") and self.is_float(user_input[1:]):
-                pre_day_value = float(user_input[1:])
+            # user_input = input(f'输入 y 紧跟电表数据，例如 y123.4，或 n 退出\n').strip().lower()
+            # if user_input.startswith("y") and self.is_float(user_input[1:]):
+            if input_result['value'] is not None:
+                # pre_day_value = float(user_input[1:])
+                pre_day_value = input_result['value']
                 result = ele_usage - pre_day_value
               
                 record_date = previous_day.strftime('%Y-%m-%d')
@@ -173,7 +195,7 @@ class ElecDataService:
                     self.cursor.close()
                     self.conn.close()
             else:
-                logger.warning(f"user_input 无效: {user_input}")
+                logger.warning(f"user_input 无效: {input_result['value']}, 退出")
                 raise UserCancledException("用户取消，电表模块退出")
 
         result = result * 80

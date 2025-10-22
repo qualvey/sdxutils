@@ -1,13 +1,11 @@
-from tools import HeaderService
-from tools import logger as mylogger
+from tools import HeaderService,LoggerService
+import requests,math, json
 
-import requests
-import math
-import json
 from collections import defaultdict
 from datetime import datetime
 
-logger = mylogger.get_logger(__name__)
+logger = LoggerService(__name__).logger
+
 header_service = HeaderService()
 headers = header_service.headers
 # # 公共请求头

@@ -1,5 +1,5 @@
-from . import logger as mylogger
-logger = mylogger.get_logger(__name__)
+from .logger import LoggerService
+logger = LoggerService(__name__).logger
 
 class HeaderService:
     def __init__(self):

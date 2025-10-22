@@ -5,10 +5,12 @@ from typing import Optional, Dict, Any, Tuple
 from datetime import datetime, timedelta
 
 from tools import env
-from tools import logger as mylogger
+
 from typing import Any, Dict, Tuple, Optional
 
-logger = mylogger.get_logger(__name__)
+from tools import LoggerService
+logger = LoggerService(__name__).logger
+
 
 cookies_str  = env.configjson['cookies']['mt']
 proj_dir = env.proj_dir

@@ -20,50 +20,59 @@ class ParentDirFilter(logging.Filter):
         return True
 
 LOG_LEVEL = getattr(logging, os.getenv("LOG_LEVEL", "INFO").upper(), logging.INFO)
-LOG_LEVEL = logging.DEBUG
+LOG_LEVEL = logging.INFO
 #LOG_FMT = "%(asctime)s - %(levelname)s - %(filename)s:%(lineno)d - %(messages"
 LOG_FMT = " %(message)s  - %(asctime)s  - %(levelname)s - %(parent_file)s:%(lineno)d "
 log_path = f'{env.proj_dir}/log/debug.log'
+#TODO OOP 风格重构
+class LoggerService:
+    def __init__(self, name: str, log_file: str = log_path, level: int = LOG_LEVEL):
+        self.name = name
+        self.log_file = log_file
+        self.level = level
+        self.logger = self._get_logger()
 
-def get_logger(name: str, log_file: str = log_path, level: int = LOG_LEVEL) -> logging.Logger:
-    logger = logging.getLogger(name)
-    logger.setLevel(level)
-    logger.propagate = False  # 避免重复打印
+    def _get_logger(self) -> logging.Logger:
+        logger = logging.getLogger(self.name)
+        logger.setLevel(self.level)
+        logger.propagate = False  # 避免重复打印
 
-    if not any(isinstance(f, ParentDirFilter) for f in logger.filters):
-        logger.addFilter(ParentDirFilter())
+        if not any(isinstance(f, ParentDirFilter) for f in logger.filters):
+            logger.addFilter(ParentDirFilter())
 
-    # 避免重复添加 FileHandler
-    if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
-        os.makedirs(os.path.dirname(log_file), exist_ok=True)
-        fh = logging.FileHandler(log_file, mode='w', encoding='utf-8')
-        fh.setLevel(level)
-        fh.setFormatter(logging.Formatter(LOG_FMT))
-        fh.setFormatter(TabSuffixFormatter(LOG_FMT))
+        # 避免重复添加 FileHandler
+        if not any(isinstance(h, logging.FileHandler) for h in logger.handlers):
+            os.makedirs(os.path.dirname(self.log_file), exist_ok=True)
+            fh = logging.FileHandler(self.log_file, mode='w', encoding='utf-8')
+            fh.setLevel(self.level)
+            fh.setFormatter(logging.Formatter(LOG_FMT))
+            fh.setFormatter(TabSuffixFormatter(LOG_FMT))
 
-        logger.addHandler(fh)
+            logger.addHandler(fh)
 
-    # 避免重复安装 coloredlogs
-    coloredlogs.install(
-        level=level,
-        logger=logger,
-        fmt=LOG_FMT,
-        level_styles={
-            'debug': {'color': 'cyan'},
-            'info': {'color': 'green'},
-            'warning': {'color': 'yellow'},
-            'error': {'color': 'red'},
-            'critical': {'color': 'red', 'bold': True},
-        }
-    )
-    for handler in logger.handlers:
-        if isinstance(handler, logging.StreamHandler):
-            handler.setFormatter(TabSuffixFormatter(LOG_FMT))
+        # 避免重复安装 coloredlogs
+        coloredlogs.install(
+            level=self.level,
+            logger=logger,
+            fmt=LOG_FMT,
+            level_styles={
+                'debug': {'color': 'cyan'},
+                'info': {'color': 'green'},
+                'warning': {'color': 'yellow'},
+                'error': {'color': 'red'},
+                'critical': {'color': 'red', 'bold': True},
+            }
+        )
+        for handler in logger.handlers:
+            if isinstance(handler, logging.StreamHandler):
+                handler.setFormatter(TabSuffixFormatter(LOG_FMT))
 
-    return logger
+        return logger
+
+
 # 测试代码
 if __name__ == "__main__":
-    logger = get_logger(__name__)
+    logger = LoggerService(__name__).logger
     logger.debug("调试信息")
     logger.info("普通信息")
     logger.warning("警告信息")

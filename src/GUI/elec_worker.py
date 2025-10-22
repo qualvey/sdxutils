@@ -2,8 +2,9 @@ from operation import  ElecDataService
 
 from PySide6.QtCore import QThread, Signal
 from datetime import datetime
-from tools import logger as mylogger
-logger = mylogger.get_logger(__name__)
+from tools import LoggerService
+logger = LoggerService(__name__).logger
+
 
 
 class ElecWorker(QThread):

@@ -7,9 +7,9 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from datetime               import datetime,  timedelta 
 # from meituan.main       import get_meituanSum,  get_mtgood_rates
 
-from tools import  logger as mylogger
 from operation import OTAUpdater
-logger = mylogger.get_logger(__name__)
+from tools import LoggerService
+logger = LoggerService(__name__).logger
 
 from PySide6.QtWidgets import (
     QApplication, QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
@@ -65,17 +65,9 @@ class MyApp(QWidget):
         self.completed_count = 0
         self.electric_meter_value = 0
         self.machine_sum = 76
+        self.login_service = loginservice()
+        self.start_login()
 
-        # login service (don't auto-run login in GUI; we'll control it)
-        try:
-            self.login_service = loginservice(auto_login=False)
-            if self.login_service.cache_check():
-                self.token = self.login_service.token
-            else:
-                self.token = self.login_service.main_flow()
-        except Exception:
-            # fallback: create without args for compatibility
-            self.login_service = loginservice()
 
         self.load_config()
         self.init_ui()
@@ -550,7 +542,7 @@ class MyApp(QWidget):
 
                 if token:
                     logger.info("登录成功")
-                    self.token = token
+                    self.token = token  
                 else:
                     logger.warning("登录未完成或失败")
             except Exception as e:
@@ -563,6 +555,7 @@ class MyApp(QWidget):
                     pass
         if self.login_service.cache_check():
             logger.info("已有有效登录状态，无需扫码")
+            self.token = self.login_service.token
         else:
             logger.info("启动登录线程，等待扫码...")
             t = threading.Thread(target=worker, daemon=True)
@@ -574,9 +567,6 @@ class MyApp(QWidget):
             self.qr_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         except Exception:
             pass
-
-        # t = threading.Thread(target=worker, daemon=True)
-        # t.start()
 
     def on_douyin_error(self, msg: str):
         # 弹窗提示

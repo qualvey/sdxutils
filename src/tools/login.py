@@ -1,11 +1,10 @@
 
-from tools import logger as mylogger
-logger = mylogger.get_logger(__name__)
+from .logger import LoggerService
+logger = LoggerService(__name__).logger
 import xml.etree.ElementTree as ET
 
 import re, requests, sys, time, base64, json, pytz, os
 from datetime import datetime, timezone
-
 
 #配置存放位置，pyinstaller打包和源码运行时不一样
 # 配置存放位置，兼容源码运行和 PyInstaller exe
@@ -268,7 +267,8 @@ class loginservice:
         返回:
         token 字符串或 None
         """
-        logger.info('开始扫码登录')
+        logger.info('开始扫码登录,')
+        logger.info(f'qr code 显示回调: {"已提供" if show_qr_callback else "未提供"}')
         uuid = self.get_uuid()
         if not uuid:
             logger.error('main_flow 停止：未获得 uuid')
