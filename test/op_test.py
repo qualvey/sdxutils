@@ -3,7 +3,7 @@ import os
 sys.path.append(os.path.abspath("./src"))
 
 # sys.path.append(os.path.abspath("../src"))  # 临时加入 src 目录到 sys.path
-
+#总金额是data.turnoverSumFee
 from operation import OperationService
 from datetime import datetime
 date=datetime(2025,10,16)

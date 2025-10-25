@@ -30,4 +30,4 @@ et/
 
 
 myapp.log
-log/debug.log
+./log
