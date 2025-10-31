@@ -30,5 +30,5 @@ et/
 
 
 myapp.log
-./log
+log
 energy_data.db
