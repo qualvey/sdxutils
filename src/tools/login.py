@@ -27,7 +27,8 @@ WINDOW_NAME = "QR Code Viewer"
 class loginservice:
     def __init__(self, auto_login: bool = True):
         self.uuid = '' 
-        self.qrcode = ''
+        self.qrcode = object
+        self.token = ''
         """
         登录服务逻辑类。
 
@@ -35,7 +36,8 @@ class loginservice:
         auto_login: 是否在构造时自动执行完整的扫码登录流程（默认 True，以兼容现有导入处）。
                     GUI 程序应传入 False 并手动调用 main_flow，传入显示回调。
         """
-        self.token = ''
+        self.cache_check()
+
         logger.info('loginservice  initialized')
         # if self.cache_check(cache_file=cache_file):
         #     logger.info('缓存登录成功')
@@ -48,7 +50,6 @@ class loginservice:
         #         else:
         #             logger.error('扫码登录失败')
  
-
     def cache_check(self,cache_file: str = f'{temp_dir}/token.json'):
         if os.path.isfile(cache_file):
             logger.info('token文件存在')
@@ -325,6 +326,8 @@ class loginservice:
             return None
 
     def token_check(self,cache_file: str = f'{temp_dir}/token.json'):
+        print('检查 token 状态...')
+        print(f'cache_file: {cache_file}')
     
         #返回两个值，bool和token（如果有
         with open(cache_file, 'r') as cache:
@@ -339,6 +342,7 @@ class loginservice:
             current_datetime = datetime.now(timezone.utc)
             # 比较过期时间与当前时间
             if exp_datetime > current_datetime:
+                self.token = token
                 return True, token
             else:
                 return False, 'token已过期'
