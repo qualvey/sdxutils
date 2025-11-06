@@ -22,8 +22,3 @@ uv run ./money-today.py
 计算当日的营业额
 ```
 uv run ./money-today.py -y
-```
-```
-
-```
-```
