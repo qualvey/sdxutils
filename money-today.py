@@ -1,4 +1,4 @@
-import sys, os, threading, io, qrcode, time
+import sys, os, threading, io, qrcode, time, argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta
 sys.path.append(os.path.abspath("./src"))
@@ -10,6 +10,19 @@ from tools import loginservice
 from io import BytesIO
 from PIL import Image
 from pyzbar.pyzbar import decode
+
+
+# date=datetime(2025,10,16)
+# date = datetime.now()-timedelta(days=1)
+date = datetime.now()
+paser = argparse.ArgumentParser()
+paser.add_argument("--date", type=str, help="指定查询日期，格式YYYY-MM-DD")
+paser.add_argument("-y", "--yesterday", action="store_true", help="查询昨天的营业额")
+args = paser.parse_args()
+if args.date:
+    date = datetime.strptime(args.date, "%Y-%m-%d")
+elif args.yesterday:
+    date = datetime.now() - timedelta(days=1)
 
 def show_qr_terminal_from_png(png_bytes: bytes):
     # 解析二维码内容
@@ -32,11 +45,6 @@ def show_qr_terminal_from_png(png_bytes: bytes):
     return data  # 返回解码结果以备使用
 
 
-
-# date=datetime(2025,10,16)
-# date = datetime.now()-timedelta(days=1)
-date = datetime.now()
-
 def opworker():
     login = loginservice()
     # login.get_qrcode(login.get_uuid())
@@ -49,6 +57,8 @@ def opworker():
     return op.data.get('turnoverSumFee')
 def mtworker():
     mt = MeituanService(date)
+    print("美团优惠后总额:")
+    print(mt.discount_price_sum)
     return mt.data.get('meituan_total')
 def dyworker():
     dy = DouyinService(date)
