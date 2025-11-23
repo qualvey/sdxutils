@@ -15,3 +15,15 @@ dependencies = [
   "tools",
   "pyzbar"
 ]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+[tool.hatch.build.targets.wheel]
+# packages 字段告诉构建系统去哪里找要打包和安装的 Python 包。
+# 它会指示工具到 "src" 目录下去找所有需要的包。
+packages = ["src"]
+[tool.pytest.ini_options]
+# 🔥 关键：告诉 Pytest 在收集测试前，将 "src" 目录添加到 Python 搜索路径中。
+pythonpath = ["src"]
+# 可以同时添加测试目录，以防万一
+# pythonpath = ["src", "test"]

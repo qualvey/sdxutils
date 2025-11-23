@@ -1,4 +1,4 @@
-from tools import HeaderService,LoggerService
+from src.tools import HeaderService,LoggerService
 import requests,math, json
 
 from collections import defaultdict
@@ -32,12 +32,9 @@ headers = header_service.headers
 
 SAVE_URL = 'https://hub.sdxnetcafe.com/api/admin/third/income/save'
 
-
 class ThirdPartyError(Exception):
     """第三方数据请求失败"""
     pass
-
-
 class ThirdPartyResponseError(Exception):
     """第三方数据返回异常"""
     pass
@@ -46,11 +43,11 @@ class ThirdPartyResponseError(Exception):
 
 class OTAUpdater:
     """OTA 数据更新工具"""
-
     def __init__(self, data: dict, date: datetime, token: str):
         self.hostname = 'hub.sdxnetcafe.com'
         self.date = date
         self.data = data
+        self.reponse = {}
         headers['Authorization'] = token
         logger.debug(f'初始化 OTAUpdater，日期: {self.date}, 数据: {json.dumps(self.data, ensure_ascii=False)}')
         self.duplicated_ids = defaultdict(list)
@@ -84,6 +81,8 @@ class OTAUpdater:
         endTm = f'{date_str} 23:59:59'
 
         response_list = self._get_list(page=1, limit=limit, startTm=startTm, endTm=endTm)
+        self.reponse = response_list
+        # print(response_list)
         total = response_list['data']['total']
         data_list = response_list['data']['rows']
         self._collect_duplicates(date_str, data_list)
@@ -127,11 +126,13 @@ class OTAUpdater:
     def run(self):
         """整体执行逻辑：删除重复 → 更新数据"""
         duplicates = self.check_unique()
+        pending_item = ["MEITUAN", "DOUYIN"]
         for third_type, ids in duplicates.items():
             for rid in ids:
-                self.delete(rid)
-
-        for name in ["meituan", "douyin"]:
-        
+                if not self.delete(rid):
+                    print(f"删除 {third_type} id={rid} 失败，跳过更新该项。")
+                    pending_item.remove(third_type)
+        print(f"待更新项: {pending_item}")
+        for name in pending_item:
             income = self.data.get(name, {}).get(f"{name}_total", 0)
             self.update(name, income)

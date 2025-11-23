@@ -211,7 +211,7 @@ class DouyinService:
 
         url      = "https://life.douyin.com/life/infra/v1/review/get_review_list/"
         
-    #几个id可能会改变 
+        #几个id可能会改变 
         query  = {
             # "life_account_ids": "7548743672642127912",
             # "life_account_id": "7136075595087087628",
@@ -230,6 +230,7 @@ class DouyinService:
             "store_type": "2",
             "source": "1"
             }
+        
         response = requests.get(
             url = url ,
             params = query,
@@ -238,6 +239,9 @@ class DouyinService:
             )
 
         data = response.json()
+        review_path = f"{env.proj_dir}/src/douyin/douyin-review.json"
+        with open(review_path, 'w', encoding='utf-8') as review_json:
+            json.dump(data, review_json, ensure_ascii=False, indent=4)
         logger.debug(f"get_good_rate返回json:\n{json.dumps(data, indent = 4, ensure_ascii=False)}")
         response_list = data.get('data').get('reviews')
         logger.debug('get_good_rate:\n')

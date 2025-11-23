@@ -10,6 +10,7 @@ class SpecialFeeWorker(QThread):
         super().__init__()
         self.name = name
         self.date = date
+        print(f"SpecialFeeWorker initialized with date: {self.date}")
         self.token = token
 
     def run(self):

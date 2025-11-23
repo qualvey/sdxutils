@@ -6,7 +6,8 @@ sys.path.append(os.path.abspath("./src"))
 from specialFee import SpecialFee
 from datetime import datetime
 date=datetime(2025,10,16)
-sf = SpecialFee(date)
+token="aa"
+sf = SpecialFee(date,token)
 print(sf.data)
 
 known_data = {
@@ -21,7 +22,7 @@ known_data = {
     'sum': 3137}
 def test_special_fee_service():
     date = datetime(2025, 10, 16)
-    sf_service = SpecialFee(date)
+    sf_service = SpecialFee(date,   token)
     
     assert 'detail' in sf_service.data, "detail not in data"
     assert 'sum' in sf_service.data, "sum not in data"

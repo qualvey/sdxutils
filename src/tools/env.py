@@ -88,14 +88,6 @@ with open(config_file, 'r',encoding="UTF-8") as config:
     configjson = json.loads(config.read())
 
 
-working_datetime:datetime = datetime.strptime(configjson['date'], "%Y-%m-%d")
-if platform.system() == "Windows":
-    # On Windows, use %#m and %#d to remove leading zeros
-    date_str = working_datetime.strftime("%#m月%#d日")
-else:
-    # On Unix-like systems (Linux, macOS), use %-m and %-d
-    date_str = working_datetime.strftime("%-m月%-d日")
-
 if __name__ == "__main__":
     logger.info(configjson)
     logger.info("当前脚本所在目录:", get_directory())

@@ -7,12 +7,13 @@ sys.path.append(os.path.abspath("./src"))
 from operation import OperationService
 from datetime import datetime
 date=datetime(2025,10,16)
+token="aa"
 
-op =  OperationService(date)
+op =  OperationService(date,token)
 print(op.data)
 def test_operation_service():
     date = datetime(2025, 10, 16)
-    op_service = OperationService(date)
+    op_service = OperationService(date,token)
     
     assert 'turnoverSumFee' in op_service.data, "turnoverSumFee not in data"
     

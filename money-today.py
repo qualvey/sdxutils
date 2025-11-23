@@ -18,11 +18,14 @@ date = datetime.now()
 paser = argparse.ArgumentParser()
 paser.add_argument("--date", type=str, help="指定查询日期，格式YYYY-MM-DD")
 paser.add_argument("-y", "--yesterday", action="store_true", help="查询昨天的营业额")
+paser.add_argument("-mt", "--meituan", action="store_true")
 args = paser.parse_args()
 if args.date:
     date = datetime.strptime(args.date, "%Y-%m-%d")
 elif args.yesterday:
     date = datetime.now() - timedelta(days=1)
+
+
 
 def show_qr_terminal_from_png(png_bytes: bytes):
     # 解析二维码内容
@@ -44,7 +47,6 @@ def show_qr_terminal_from_png(png_bytes: bytes):
     print(f.read())
     return data  # 返回解码结果以备使用
 
-
 def opworker():
     login = loginservice()
     # login.get_qrcode(login.get_uuid())
@@ -54,16 +56,18 @@ def opworker():
         login.main_flow(show_qr_callback=show_qr_terminal_from_png)
     token = login.token
     op =  OperationService(date, token)
-    return op.data.get('turnoverSumFee')
+    return op.data.get('turnoverSumFee',0)
 def mtworker():
     mt = MeituanService(date)
     print("美团优惠后总额:")
     print(mt.discount_price_sum)
-    return mt.data.get('meituan_total')
+    return mt.data.get('meituan_total',0)
 def dyworker():
     dy = DouyinService(date)
-    return dy.data.get('douyin_total')
+    return dy.data.get('douyin_total',0)
 
+print('mt')
+print(mtworker())
 with ThreadPoolExecutor(max_workers=3) as executor:
     futures = {
         executor.submit(opworker): "op",

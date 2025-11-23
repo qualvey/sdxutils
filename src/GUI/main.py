@@ -66,11 +66,9 @@ class MyApp(QWidget):
         self.electric_meter_value = 0
         self.machine_sum = 76
         self.login_service = loginservice()
-        self.start_login()
-
-
         self.load_config()
         self.init_ui()
+        self.start_login()
 
     def handle_finished(self, name, data):
         self.results[name] = data   # 按 name 存储每个任务的数据
@@ -90,7 +88,6 @@ class MyApp(QWidget):
         genws = Wshandler(self.working_date, self.selected_file , self.output_file, self.results)
         genws.run()
         self.results = {}
-        QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
         self.workers = []   
         # 如果是批量模式，继续下一个日期
         if getattr(self, 'batch_mode', False):
@@ -98,9 +95,13 @@ class MyApp(QWidget):
             if hasattr(self, 'batch_dates') and self.batch_dates:
                 next_date = self.batch_dates.pop(0)
                 self.set_date_and_run(next_date)
+                return
             else:
                 # 批量完成，清理
                 self.batch_mode = False
+                QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
+        QMessageBox.information(self, "完成", "所有数据处理完成，报表已生成！")
+
 
     def start_douyin(self):
         self.douyin_worker = DouyinWorker("douyin",self.working_datetime)
@@ -373,6 +374,7 @@ class MyApp(QWidget):
         self.start_btn.setFixedSize(120, 40)
         self.start_btn.clicked.connect(self.run_report)  # 点击连接方法
         layout.addWidget(self.start_btn)
+        self.start_btn.setEnabled(False)
 
         self.setLayout(layout)
 
@@ -470,7 +472,6 @@ class MyApp(QWidget):
         else:
             self.save_file_label.setText("未选择保存文件")
 
-
     def on_op_error(self, msg: str):
         # 弹窗提示
         box = QMessageBox(self)
@@ -543,6 +544,7 @@ class MyApp(QWidget):
                 if token:
                     logger.info("登录成功")
                     self.token = token  
+                    self.start_btn.setEnabled(True)
                 else:
                     logger.warning("登录未完成或失败")
             except Exception as e:
@@ -556,6 +558,7 @@ class MyApp(QWidget):
         if self.login_service.cache_check():
             logger.info("已有有效登录状态，无需扫码")
             self.token = self.login_service.token
+            self.start_btn.setEnabled(True)
         else:
             logger.info("启动登录线程，等待扫码...")
             t = threading.Thread(target=worker, daemon=True)
