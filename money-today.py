@@ -11,21 +11,24 @@ from io import BytesIO
 from PIL import Image
 from pyzbar.pyzbar import decode
 
-
 # date=datetime(2025,10,16)
 # date = datetime.now()-timedelta(days=1)
 date = datetime.now()
 paser = argparse.ArgumentParser()
 paser.add_argument("--date", type=str, help="指定查询日期，格式YYYY-MM-DD")
 paser.add_argument("-y", "--yesterday", action="store_true", help="查询昨天的营业额")
-paser.add_argument("-mt", "--meituan", action="store_true")
+paser.add_argument("-mt", "--meituan", action="store_true", help="只查询美团数据")
+paser.add_argument("-no", "--noop", action="store_true", help="不查询OP数据,不用扫码登陆，只获取抖音和美团的数据")
+
 args = paser.parse_args()
+
+OPneed = True
 if args.date:
     date = datetime.strptime(args.date, "%Y-%m-%d")
-elif args.yesterday:
+if args.yesterday:
     date = datetime.now() - timedelta(days=1)
-
-
+if args.noop:
+    OPneed = False
 
 def show_qr_terminal_from_png(png_bytes: bytes):
     # 解析二维码内容
@@ -66,15 +69,15 @@ def dyworker():
     dy = DouyinService(date)
     return dy.data.get('douyin_total',0)
 
-print('mt')
-print(mtworker())
 with ThreadPoolExecutor(max_workers=3) as executor:
+
     futures = {
-        executor.submit(opworker): "op",
         executor.submit(mtworker): "mt",
         executor.submit(dyworker): "dy",
     }
-
+    if OPneed:
+        futures[executor.submit(opworker)] = "op"
+        
     results = {}
     sum = 0
     for future in as_completed(futures):
@@ -86,4 +89,7 @@ print(results)
 #这个地方，业务逻辑应该是，必须有值，否则报空值异常
 #sum = dy.data.get('douyin_total', 0) + mt.data.get('meituan_total', 0) + op.data.get('turnoverSumFee', 0)
 #sum = round(sum, 2)
-print(f"总营业额:{sum}")
+if OPneed:
+    print(f"总营业额:{sum}")
+if not OPneed:
+    print(f"抖音+美团总营业额计算完成{sum}")

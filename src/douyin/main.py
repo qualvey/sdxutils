@@ -146,7 +146,7 @@ class DouyinService:
 
                 if douyin_json:
                     logger.info("获取抖音数据成功.")
-                    logger.debug(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
+                    # logger.debug(f'详细原始json:{json.dumps(douyin_json, indent=4, ensure_ascii=False)}')
 
                     status_code = douyin_json.get("status_code")
                     if status_code == 4000100:
@@ -242,10 +242,11 @@ class DouyinService:
         review_path = f"{env.proj_dir}/src/douyin/douyin-review.json"
         with open(review_path, 'w', encoding='utf-8') as review_json:
             json.dump(data, review_json, ensure_ascii=False, indent=4)
-        logger.debug(f"get_good_rate返回json:\n{json.dumps(data, indent = 4, ensure_ascii=False)}")
+            pass
+        # logger.debug(f"get_good_rate返回json:\n{json.dumps(data, indent = 4, ensure_ascii=False)}")
         response_list = data.get('data').get('reviews')
         logger.debug('get_good_rate:\n')
-        logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))
+        # logger.debug(json.dumps(response_list, indent = 4, ensure_ascii=False))
         if response_list is not None:
             list_len = len(response_list)
             if not isinstance(self.data, dict):

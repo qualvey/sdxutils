@@ -207,7 +207,8 @@ class MeituanService():
         response = requests.get(url=url_comment, params = query, cookies = cookies ,headers = headers_comment)
         data_json = response.json()
         with open(f"{proj_dir}/src/meituan/meituan_comments.json", 'w', encoding="utf-8") as f:
-            json.dump(data_json, f, ensure_ascii=False, indent=4)
+            # json.dump(data_json, f, ensure_ascii=False, indent=4)
+            pass
             #这里的json字段可能会变动，需要注意
             #msg->reviewDetailDTOs-star==5
         high_rates = 0
