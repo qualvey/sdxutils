@@ -82,6 +82,7 @@ class MyApp(QWidget):
         self.completed_count = 0
         infomation = json.dumps(self.results, indent=4, ensure_ascii=False)
         logger.info(f"所有任务完成，结果: {infomation}")
+        
         otaworker = OTAUpdater(self.results, self.working_date,self.token)
         thread_ota  = threading.Thread(target=otaworker.run, daemon=True)
         thread_ota.start()

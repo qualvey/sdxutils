@@ -111,6 +111,7 @@ class OTAUpdater:
 
     def update(self, name: str, income: int) -> dict:
         """更新某渠道的数据"""
+        #这里的name是大写
         date_str = self.date.strftime("%Y-%m-%d")
         data = {
             "branchId": "a92fd8a33b7811ea87766c92bf5c82be",
@@ -134,5 +135,6 @@ class OTAUpdater:
                     pending_item.remove(third_type)
         print(f"待更新项: {pending_item}")
         for name in pending_item:
-            income = self.data.get(name, {}).get(f"{name}_total", 0)
+            #查询data里面的key，都是小写的
+            income = self.data.get(name.lower(), {}).get(f"{name.lower()}_total", 0)
             self.update(name, income)
